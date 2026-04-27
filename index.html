@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kripto Canlı Panel — CoinMarketCap</title>
+<style>
+  :root {
+    --bg: #0b0e1a; --bg-card: #151a2e; --bg-card-hover: #1c2340;
+    --border: #242b47; --text: #e8ecf5; --text-dim: #8a93ab;
+    --green: #26d07c; --red: #ff5b6a; --accent: #f7a600; --blue: #4f8cff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px;
+  }
+  .container { max-width: 1400px; margin: 0 auto; }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 16px;
+  }
+  .title-block h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .title-block p { color: var(--text-dim); font-size: 14px; margin-top: 4px; }
+  .status { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-dim); }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .refresh-btn {
+    background: var(--bg-card); border: 1px solid var(--border); color: var(--text);
+    padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px;
+  }
+  .refresh-btn:hover { background: var(--bg-card-hover); border-color: var(--blue); }
+
+  .setup-screen {
+    max-width: 600px; margin: 80px auto; padding: 32px;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+  }
+  .setup-screen h2 { margin-bottom: 16px; }
+  .setup-screen p, .setup-screen li { color: var(--text-dim); line-height: 1.6; margin-bottom: 8px; }
+  .setup-screen ol { padding-left: 24px; margin: 16px 0; }
+  .setup-screen code {
+    background: var(--bg); padding: 2px 6px; border-radius: 4px;
+    font-family: ui-monospace, monospace; font-size: 13px; color: var(--text);
+  }
+  .setup-screen input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 12px; border-radius: 8px; font-size: 14px;
+    margin: 12px 0; font-family: ui-monospace, monospace;
+  }
+  .setup-screen input:focus { outline: none; border-color: var(--blue); }
+  .setup-screen button {
+    background: var(--blue); color: #fff; border: none; padding: 12px 24px;
+    border-radius: 8px; font-size: 14px; cursor: pointer; font-weight: 600;
+  }
+  .setup-screen .err { color: var(--red); margin-top: 8px; font-size: 13px; }
+
+  .summary-bar {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; margin-bottom: 16px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px;
+  }
+  .summary-item .label {
+    font-size: 12px; color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 4px;
+  }
+  .summary-item .value { font-size: 20px; font-weight: 600; }
+  .toolbar {
+    display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center;
+  }
+  .search-input, .sort-select {
+    background: var(--bg-card); border: 1px solid var(--border); color: var(--text);
+    padding: 10px 14px; border-radius: 8px; font-size: 14px; outline: none;
+  }
+  .search-input { flex: 1; min-width: 240px; }
+  .search-input:focus, .sort-select:focus { border-color: var(--blue); }
+  .filter-info { color: var(--text-dim); font-size: 13px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px; transition: all 0.2s; position: relative;
+  }
+  .card:hover { border-color: var(--blue); transform: translateY(-2px); }
+  .card.no-data { opacity: 0.4; }
+  .card.hidden { display: none; }
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+  .coin-info { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .coin-icon {
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff; flex-shrink: 0;
+  }
+  .coin-text { min-width: 0; }
+  .coin-name {
+    font-size: 15px; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px;
+  }
+  .coin-symbol { font-size: 12px; color: var(--text-dim); text-transform: uppercase; }
+  .rank-badge {
+    background: var(--bg); color: var(--text-dim); font-size: 10px;
+    padding: 2px 6px; border-radius: 4px; margin-left: 6px;
+  }
+  .change-badge { padding: 4px 9px; border-radius: 6px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
+  .change-badge.up { background: rgba(38, 208, 124, 0.15); color: var(--green); }
+  .change-badge.down { background: rgba(255, 91, 106, 0.15); color: var(--red); }
+  .change-badge.muted { background: rgba(138, 147, 171, 0.15); color: var(--text-dim); }
+  .price-main { font-size: 22px; font-weight: 700; margin-bottom: 2px; font-variant-numeric: tabular-nums; }
+  .price-secondary { font-size: 13px; color: var(--text-dim); margin-bottom: 14px; font-variant-numeric: tabular-nums; }
+  .changes-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 12px; font-size: 11px;
+  }
+  .change-cell {
+    background: var(--bg); padding: 6px; border-radius: 6px; text-align: center;
+  }
+  .change-cell .lbl { color: var(--text-dim); display: block; margin-bottom: 2px; }
+  .change-cell .val { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .change-cell .val.up { color: var(--green); }
+  .change-cell .val.down { color: var(--red); }
+  .stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;
+    padding-top: 10px; border-top: 1px solid var(--border);
+  }
+  .stat-label { color: var(--text-dim); margin-bottom: 2px; }
+  .stat-value { font-weight: 500; font-variant-numeric: tabular-nums; }
+  .loader { text-align: center; padding: 40px; color: var(--text-dim); grid-column: 1 / -1; }
+  .error {
+    background: rgba(255, 91, 106, 0.1); border: 1px solid var(--red); color: var(--red);
+    padding: 16px; border-radius: 8px; margin-bottom: 16px;
+  }
+  footer {
+    margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border);
+    text-align: center; color: var(--text-dim); font-size: 12px;
+  }
+  footer a { color: var(--blue); text-decoration: none; }
+  .skeleton {
+    background: linear-gradient(90deg, var(--bg-card) 0%, var(--bg-card-hover) 50%, var(--bg-card) 100%);
+    background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px;
+  }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .reset-link {
+    color: var(--text-dim); font-size: 12px; cursor: pointer; text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     ANA PANEL
+     ============================================================ -->
+<div class="container" id="mainPanel">
+  <header>
+    <div class="title-block">
+      <h1>Kripto Canlı Panel</h1>
+      <p>CoinMarketCap (Cloudflare Worker proxy) · USD &amp; TRY · <span id="refreshLabel">5</span> dk'da bir yenilenir</p>
+    </div>
+    <div class="status">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Yükleniyor…</span>
+      <button class="refresh-btn" onclick="fetchAll(true)">↻ Şimdi Yenile</button>
+    </div>
+  </header>
+
+  <div id="errorBox"></div>
+
+  <div class="summary-bar">
+    <div class="summary-item">
+      <div class="label">Toplam Token</div>
+      <div class="value" id="totalCount">—</div>
+    </div>
+    <div class="summary-item">
+      <div class="label">Veri Var</div>
+      <div class="value" id="liveCount" style="color:var(--green)">—</div>
+    </div>
+    <div class="summary-item">
+      <div class="label">Yükselenler 24s</div>
+      <div class="value" id="upCount" style="color:var(--green)">—</div>
+    </div>
+    <div class="summary-item">
+      <div class="label">Düşenler 24s</div>
+      <div class="value" id="downCount" style="color:var(--red)">—</div>
+    </div>
+    <div class="summary-item">
+      <div class="label">USD/TRY</div>
+      <div class="value" id="usdTry">—</div>
+    </div>
+    <div class="summary-item">
+      <div class="label">24s Toplam Hacim</div>
+      <div class="value" id="totalVolume">—</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <input type="text" class="search-input" id="searchInput" placeholder="Ara: Bitcoin, BTC, Ethena…">
+    <select class="sort-select" id="sortSelect">
+      <option value="rank">Sırala: CMC Sıralaması</option>
+      <option value="name">Sırala: Alfabetik</option>
+      <option value="change-desc">Sırala: 24s Değişim ↓</option>
+      <option value="change-asc">Sırala: 24s Değişim ↑</option>
+      <option value="price-desc">Sırala: Fiyat ↓</option>
+      <option value="price-asc">Sırala: Fiyat ↑</option>
+      <option value="volume-desc">Sırala: Hacim ↓</option>
+      <option value="mcap-desc">Sırala: Piyasa Değeri ↓</option>
+    </select>
+    <span class="filter-info" id="filterInfo"></span>
+  </div>
+
+  <div class="grid" id="cardsGrid">
+    <div class="loader">Fiyatlar yükleniyor…</div>
+  </div>
+
+  <footer>
+    Veri kaynağı: <a href="https://coinmarketcap.com/api/" target="_blank">CoinMarketCap Pro API</a>
+    (Cloudflare Worker proxy üzerinden) · Son güncelleme: <span id="lastUpdate">—</span>
+  </footer>
+</div>
+
+<script>
+// ============================================================
+// AYARLAR
+// ============================================================
+const REFRESH_MS = 5 * 60 * 1000;  // 5 dk — CMC free plan günde 333 credit
+const WORKER_URL = "https://kripto-proxy.emreavsar01.workers.dev";  // Cloudflare Worker proxy
+
+// Excel'den deduplicated 141 token
+const COINS = [
+  { sym:"AAVE", name:"Aave" }, { sym:"ACH", name:"Alchemy Pay" },
+  { sym:"ADA", name:"Cardano" }, { sym:"AI", name:"Sleepless AI" },
+  { sym:"ALGO", name:"Algorand" }, { sym:"ALICE", name:"My Neighbor Alice" },
+  { sym:"ANKR", name:"Ankr" }, { sym:"APE", name:"ApeCoin" },
+  { sym:"APT", name:"Aptos" }, { sym:"AR", name:"Arweave" },
+  { sym:"ARB", name:"Arbitrum" }, { sym:"ARKM", name:"Arkham" },
+  { sym:"ATOM", name:"Cosmos" }, { sym:"AUDIO", name:"Audius" },
+  { sym:"AVAX", name:"Avalanche" }, { sym:"AXS", name:"Axie Infinity" },
+  { sym:"BAT", name:"Basic Attention Token" }, { sym:"BCH", name:"Bitcoin Cash" },
+  { sym:"BEAMX", name:"Beam" }, { sym:"BEL", name:"Bella Protocol" },
+  { sym:"BLUR", name:"Blur" }, { sym:"BNB", name:"BNB" },
+  { sym:"BOME", name:"BOOK OF MEME" }, { sym:"BONK", name:"Bonk" },
+  { sym:"BTC", name:"Bitcoin" }, { sym:"BUSD", name:"Binance USD" },
+  { sym:"CAKE", name:"PancakeSwap" }, { sym:"CELO", name:"Celo" },
+  { sym:"CFX", name:"Conflux" }, { sym:"CHZ", name:"Chiliz" },
+  { sym:"COMP", name:"Compound" }, { sym:"CRV", name:"Curve DAO Token" },
+  { sym:"CTSI", name:"Cartesi" }, { sym:"DOGE", name:"Dogecoin" },
+  { sym:"DOGS", name:"Dogs" }, { sym:"DOT", name:"Polkadot" },
+  { sym:"DUSK", name:"Dusk Network" }, { sym:"DYDX", name:"dYdX" },
+  { sym:"DYM", name:"Dymension" }, { sym:"EGLD", name:"MultiversX" },
+  { sym:"EIGEN", name:"EigenLayer" }, { sym:"ENA", name:"Ethena" },
+  { sym:"ENJ", name:"Enjin Coin" }, { sym:"ENS", name:"Ethereum Name Service" },
+  { sym:"EOS", name:"EOS" }, { sym:"ETC", name:"Ethereum Classic" },
+  { sym:"ETH", name:"Ethereum" }, { sym:"ETHFI", name:"Ether.fi" },
+  { sym:"ETHW", name:"EthereumPoW" }, { sym:"FET", name:"Fetch.ai" },
+  { sym:"FIDA", name:"Bonfida" }, { sym:"FIL", name:"Filecoin" },
+  { sym:"FLOKI", name:"Floki Inu" }, { sym:"FLOW", name:"Flow" },
+  { sym:"GALA", name:"Gala" }, { sym:"GMT", name:"STEPN" },
+  { sym:"GMX", name:"GMX" }, { sym:"GRT", name:"The Graph" },
+  { sym:"HBAR", name:"Hedera" }, { sym:"HIVE", name:"Hive" },
+  { sym:"HNT", name:"Helium" }, { sym:"HOT", name:"Holo" },
+  { sym:"IMX", name:"Immutable X" }, { sym:"INJ", name:"Injective" },
+  { sym:"JUP", name:"Jupiter" }, { sym:"KDA", name:"Kadena" },
+  { sym:"KNC", name:"Kyber Network Crystal" }, { sym:"KSM", name:"Kusama" },
+  { sym:"LDO", name:"Lido DAO" }, { sym:"LINK", name:"Chainlink" },
+  { sym:"LRC", name:"Loopring" }, { sym:"LTC", name:"Litecoin" },
+  { sym:"LUNA", name:"Terra" }, { sym:"MANA", name:"Decentraland" },
+  { sym:"MATIC", name:"Polygon (eski)" }, { sym:"ME", name:"Magic Eden" },
+  { sym:"MEME", name:"Memecoin" }, { sym:"MOVE", name:"Movement" },
+  { sym:"NEAR", name:"NEAR Protocol" }, { sym:"NEO", name:"NEO" },
+  { sym:"NFP", name:"NFPrompt" }, { sym:"NOT", name:"Notcoin" },
+  { sym:"OGN", name:"Origin Protocol" }, { sym:"ONE", name:"Harmony" },
+  { sym:"OP", name:"Optimism" }, { sym:"OXT", name:"Orchid" },
+  { sym:"PAXG", name:"Pax Gold" }, { sym:"PENGU", name:"Pudgy Penguins" },
+  { sym:"PEPE", name:"Pepe" }, { sym:"PIXEL", name:"Pixels" },
+  { sym:"PNUT", name:"Peanut the Squirrel" }, { sym:"POL", name:"Polygon" },
+  { sym:"PYTH", name:"Pyth Network" }, { sym:"QNT", name:"Quant" },
+  { sym:"RAY", name:"Raydium" }, { sym:"REEF", name:"Reef Finance" },
+  { sym:"RENDER", name:"Render" }, { sym:"RLC", name:"iExec RLC" },
+  { sym:"RON", name:"Ronin" }, { sym:"ROSE", name:"Oasis Network" },
+  { sym:"RUNE", name:"THORChain" }, { sym:"RVN", name:"Ravencoin" },
+  { sym:"S", name:"Sonic" }, { sym:"SAND", name:"The Sandbox" },
+  { sym:"SEI", name:"Sei" }, { sym:"SHIB", name:"Shiba Inu" },
+  { sym:"SKY", name:"Sky" }, { sym:"SLP", name:"Smooth Love Potion" },
+  { sym:"SNX", name:"Synthetix" }, { sym:"SOL", name:"Solana" },
+  { sym:"SPELL", name:"Spell Token" }, { sym:"STORJ", name:"Storj" },
+  { sym:"STRK", name:"Starknet" }, { sym:"STX", name:"Stacks" },
+  { sym:"SUI", name:"Sui" }, { sym:"SUSHI", name:"SushiSwap" },
+  { sym:"T", name:"Threshold" }, { sym:"TAO", name:"Bittensor" },
+  { sym:"THETA", name:"Theta Network" }, { sym:"TIA", name:"Celestia" },
+  { sym:"TLM", name:"Alien Worlds" }, { sym:"TON", name:"Toncoin" },
+  { sym:"TRB", name:"Tellor" }, { sym:"TRUMP", name:"Official Trump" },
+  { sym:"TRX", name:"TRON" }, { sym:"TWT", name:"Trust Wallet Token" },
+  { sym:"UMA", name:"UMA" }, { sym:"UNI", name:"Uniswap" },
+  { sym:"USDC", name:"USD Coin" }, { sym:"USDT", name:"Tether" },
+  { sym:"VANRY", name:"Vanar Chain" }, { sym:"VET", name:"VeChain" },
+  { sym:"W", name:"Wormhole" }, { sym:"WAVES", name:"Waves" },
+  { sym:"WIF", name:"dogwifhat" }, { sym:"WLD", name:"Worldcoin" },
+  { sym:"XAI", name:"Xai" }, { sym:"XLM", name:"Stellar" },
+  { sym:"XRP", name:"Ripple" }, { sym:"XTZ", name:"Tezos" },
+  { sym:"ZIL", name:"Zilliqa" },
+];
+const SYM_SET = new Set(COINS.map(c => c.sym));
+
+const BRAND = {
+  BTC:"#f7931a", ETH:"#627eea", SOL:"#9945ff", XRP:"#23292f", BNB:"#f0b90b",
+  ADA:"#0033ad", DOGE:"#c2a633", AVAX:"#e84142", DOT:"#e6007a", LINK:"#2a5ada",
+  USDT:"#26a17b", USDC:"#2775ca", LTC:"#345d9d", BCH:"#0ac18e", TRX:"#ff060a",
+  MATIC:"#8247e5", POL:"#8247e5", SHIB:"#ffa409", PEPE:"#3da935", FLOKI:"#fb8c00",
+  AAVE:"#b6509e", UNI:"#ff007a", ATOM:"#2e3148", NEAR:"#000000", APT:"#06141d",
+  TON:"#0098ea", PAXG:"#cba135", XLM:"#000000", ETC:"#3ab83a", FIL:"#0090ff",
+  EOS:"#000000", XTZ:"#2c7df7", THETA:"#2ab8e6",
+};
+function colorFor(sym) {
+  if (BRAND[sym]) return BRAND[sym];
+  let h = 0;
+  for (let i = 0; i < sym.length; i++) h = sym.charCodeAt(i) + ((h << 5) - h);
+  return `hsl(${Math.abs(h) % 360}, 60%, 45%)`;
+}
+
+// ============================================================
+// VERİ ÇEKİMİ
+// ============================================================
+const tickData = {};   // { sym: { price, change1h, change24h, change7d, vol, mcap, rank } }
+let usdTryRate = null;
+
+async function fetchListings() {
+  const r = await fetch(`${WORKER_URL}/cmc/listings?limit=500&convert=USD`);
+  if (!r.ok) throw new Error("listings HTTP " + r.status);
+  const d = await r.json();
+  if (d.status?.error_code !== 0) {
+    throw new Error("CMC: " + (d.status?.error_message || "bilinmeyen hata"));
+  }
+  return d.data || [];
+}
+
+async function fetchUsdTry() {
+  try {
+    const r = await fetch(`${WORKER_URL}/fx/usdtry`);
+    const d = await r.json();
+    return d.rate || null;
+  } catch (e) { return null; }
+}
+
+// ============================================================
+// CARD RENDER
+// ============================================================
+const fmtUSD = (n) => {
+  if (n == null || isNaN(n)) return "—";
+  if (n >= 1)      return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 2 });
+  if (n >= 0.01)   return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 4 });
+  return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 8 });
+};
+const fmtTRY = (n) => {
+  if (n == null || isNaN(n)) return "—";
+  if (n >= 1)    return "₺" + n.toLocaleString("tr-TR", { maximumFractionDigits: 2 });
+  return "₺" + n.toLocaleString("tr-TR", { maximumFractionDigits: 6 });
+};
+const fmtBig = (n) => {
+  if (n == null || isNaN(n)) return "—";
+  if (n >= 1e12) return "$" + (n / 1e12).toFixed(2) + "T";
+  if (n >= 1e9)  return "$" + (n / 1e9).toFixed(2) + "B";
+  if (n >= 1e6)  return "$" + (n / 1e6).toFixed(2) + "M";
+  if (n >= 1e3)  return "$" + (n / 1e3).toFixed(2) + "K";
+  return "$" + n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+};
+const fmtPct = (n) => n == null || isNaN(n) ? "—" : (n >= 0 ? "+" : "") + n.toFixed(2) + "%";
+const pctClass = (n) => n == null ? "muted" : (n >= 0 ? "up" : "down");
+
+function buildCard(coin) {
+  const el = document.createElement("div");
+  el.className = "card";
+  el.id = "card-" + coin.sym;
+  el.dataset.sym = coin.sym;
+  el.dataset.name = coin.name.toLowerCase();
+  el.innerHTML = `
+    <div class="card-header">
+      <div class="coin-info">
+        <div class="coin-icon" style="background:${colorFor(coin.sym)}">${coin.sym.slice(0,2)}</div>
+        <div class="coin-text">
+          <div class="coin-name" title="${coin.name}">
+            ${coin.name}<span class="rank-badge" id="rank-${coin.sym}"></span>
+          </div>
+          <div class="coin-symbol">${coin.sym}</div>
+        </div>
+      </div>
+      <div class="change-badge muted" id="change-${coin.sym}">—</div>
+    </div>
+    <div class="price-main" id="priceUsd-${coin.sym}"><span class="skeleton" style="display:inline-block;width:100px;height:22px"></span></div>
+    <div class="price-secondary" id="priceTry-${coin.sym}">—</div>
+    <div class="changes-row">
+      <div class="change-cell"><span class="lbl">1s</span><span class="val muted" id="ch1h-${coin.sym}">—</span></div>
+      <div class="change-cell"><span class="lbl">24s</span><span class="val muted" id="ch24h-${coin.sym}">—</span></div>
+      <div class="change-cell"><span class="lbl">7g</span><span class="val muted" id="ch7d-${coin.sym}">—</span></div>
+    </div>
+    <div class="stats">
+      <div><div class="stat-label">24s Hacim</div><div class="stat-value" id="vol-${coin.sym}">—</div></div>
+      <div><div class="stat-label">Piyasa Değeri</div><div class="stat-value" id="mcap-${coin.sym}">—</div></div>
+    </div>
+  `;
+  return el;
+}
+
+function renderGrid() {
+  const grid = document.getElementById("cardsGrid");
+  grid.innerHTML = "";
+  COINS.forEach(c => grid.appendChild(buildCard(c)));
+}
+
+function updateCard(coin, data) {
+  const card = document.getElementById("card-" + coin.sym);
+  if (!data) {
+    card.classList.add("no-data");
+    document.getElementById("priceUsd-" + coin.sym).textContent = "veri yok";
+    return;
+  }
+  card.classList.remove("no-data");
+  const q = data.quote.USD;
+  tickData[coin.sym] = {
+    price: q.price, change1h: q.percent_change_1h,
+    change24h: q.percent_change_24h, change7d: q.percent_change_7d,
+    vol: q.volume_24h, mcap: q.market_cap, rank: data.cmc_rank,
+  };
+  document.getElementById("priceUsd-" + coin.sym).textContent = fmtUSD(q.price);
+  document.getElementById("priceTry-" + coin.sym).textContent =
+    usdTryRate ? fmtTRY(q.price * usdTryRate) : "—";
+
+  const badge = document.getElementById("change-" + coin.sym);
+  badge.textContent = fmtPct(q.percent_change_24h);
+  badge.className = "change-badge " + pctClass(q.percent_change_24h);
+
+  const c1 = document.getElementById("ch1h-" + coin.sym);
+  c1.textContent = fmtPct(q.percent_change_1h);  c1.className = "val " + pctClass(q.percent_change_1h);
+  const c24 = document.getElementById("ch24h-" + coin.sym);
+  c24.textContent = fmtPct(q.percent_change_24h); c24.className = "val " + pctClass(q.percent_change_24h);
+  const c7 = document.getElementById("ch7d-" + coin.sym);
+  c7.textContent = fmtPct(q.percent_change_7d);  c7.className = "val " + pctClass(q.percent_change_7d);
+
+  document.getElementById("vol-"  + coin.sym).textContent = fmtBig(q.volume_24h);
+  document.getElementById("mcap-" + coin.sym).textContent = fmtBig(q.market_cap);
+  document.getElementById("rank-" + coin.sym).textContent = data.cmc_rank ? "#" + data.cmc_rank : "";
+}
+
+// ============================================================
+// ANA DÖNGÜ
+// ============================================================
+async function fetchAll(manual = false) {
+  const statusText = document.getElementById("statusText");
+  const statusDot = document.getElementById("statusDot");
+  const errorBox = document.getElementById("errorBox");
+  statusText.textContent = "Güncelleniyor…";
+  statusDot.style.background = "var(--accent)";
+  statusDot.style.boxShadow = "0 0 10px var(--accent)";
+
+  try {
+    const [listings, fx] = await Promise.all([
+      fetchListings(),
+      manual || usdTryRate == null ? fetchUsdTry() : Promise.resolve(usdTryRate)
+    ]);
+    if (fx) {
+      usdTryRate = fx;
+      document.getElementById("usdTry").textContent = "₺" + fx.toFixed(2);
+    }
+
+    // CMC listings → bizim tokenlere göre eşle
+    const bySym = {};
+    for (const item of listings) {
+      if (SYM_SET.has(item.symbol)) bySym[item.symbol] = item;
+    }
+
+    let totalVol = 0, ups = 0, downs = 0, live = 0;
+    COINS.forEach(c => {
+      const d = bySym[c.sym];
+      updateCard(c, d);
+      if (d) {
+        live++;
+        const ch = d.quote.USD.percent_change_24h;
+        totalVol += d.quote.USD.volume_24h || 0;
+        if ((ch ?? 0) >= 0) ups++; else downs++;
+      }
+    });
+    document.getElementById("totalCount").textContent = COINS.length;
+    document.getElementById("liveCount").textContent = live;
+    document.getElementById("upCount").textContent = ups;
+    document.getElementById("downCount").textContent = downs;
+    document.getElementById("totalVolume").textContent = fmtBig(totalVol);
+    document.getElementById("lastUpdate").textContent = new Date().toLocaleTimeString("tr-TR");
+
+    applySortAndFilter();
+
+    errorBox.innerHTML = "";
+    statusText.textContent = "Canlı";
+    statusDot.style.background = "var(--green)";
+    statusDot.style.boxShadow = "0 0 10px var(--green)";
+  } catch (e) {
+    console.error(e);
+    errorBox.innerHTML = `<div class="error">Hata: ${e.message}</div>`;
+    statusText.textContent = "Bağlantı hatası";
+    statusDot.style.background = "var(--red)";
+    statusDot.style.boxShadow = "0 0 10px var(--red)";
+  }
+}
+
+// ============================================================
+// SEARCH & SORT
+// ============================================================
+function applySortAndFilter() {
+  const q = document.getElementById("searchInput").value.trim().toLowerCase();
+  const sort = document.getElementById("sortSelect").value;
+  const grid = document.getElementById("cardsGrid");
+  const cards = Array.from(grid.querySelectorAll(".card"));
+
+  cards.sort((a, b) => {
+    const sa = a.dataset.sym, sb = b.dataset.sym;
+    const ta = tickData[sa] || {}, tb = tickData[sb] || {};
+    const hasA = ta.price != null, hasB = tb.price != null;
+    if (sort === "name") return sa.localeCompare(sb);
+    if (sort === "rank") {
+      const ra = hasA ? ta.rank : 99999, rb = hasB ? tb.rank : 99999;
+      return (ra ?? 99999) - (rb ?? 99999);
+    }
+    if (sort === "change-desc") return (hasB ? tb.change24h : -Infinity) - (hasA ? ta.change24h : -Infinity);
+    if (sort === "change-asc")  return (hasA ? ta.change24h : Infinity) - (hasB ? tb.change24h : Infinity);
+    if (sort === "price-desc")  return (hasB ? tb.price : -Infinity) - (hasA ? ta.price : -Infinity);
+    if (sort === "price-asc")   return (hasA ? ta.price : Infinity) - (hasB ? tb.price : Infinity);
+    if (sort === "volume-desc") return (hasB ? tb.vol : -Infinity) - (hasA ? ta.vol : -Infinity);
+    if (sort === "mcap-desc")   return (hasB ? tb.mcap : -Infinity) - (hasA ? ta.mcap : -Infinity);
+    return 0;
+  });
+  cards.forEach(c => grid.appendChild(c));
+
+  let visible = 0;
+  cards.forEach(c => {
+    const match = !q || c.dataset.sym.toLowerCase().includes(q) || c.dataset.name.includes(q);
+    c.classList.toggle("hidden", !match);
+    if (match) visible++;
+  });
+  document.getElementById("filterInfo").textContent =
+    q ? `${visible} / ${COINS.length} eşleşti` : "";
+}
+
+// ============================================================
+// BAŞLATMA
+// ============================================================
+function init() {
+  document.getElementById("refreshLabel").textContent = Math.round(REFRESH_MS / 60000);
+  document.getElementById("totalCount").textContent = COINS.length;
+  renderGrid();
+  document.getElementById("searchInput").addEventListener("input", applySortAndFilter);
+  document.getElementById("sortSelect").addEventListener("change", applySortAndFilter);
+  fetchAll(true);
+  setInterval(() => fetchAll(false), REFRESH_MS);
+}
+
+init();
+</script>
+</body>
+</html>
