@@ -371,14 +371,23 @@ function colorFor(sym) {
 const tickData = {};   // { sym: { price, change1h, change24h, change7d, vol, mcap, rank } }
 let usdTryRate = null;
 
-async function fetchListings() {
-  const r = await fetch(`${WORKER_URL}/cmc/listings?limit=1000&convert=USD`);
-  if (!r.ok) throw new Error("listings HTTP " + r.status);
-  const d = await r.json();
-  if (d.status?.error_code !== 0) {
-    throw new Error("CMC: " + (d.status?.error_message || "bilinmeyen hata"));
-  }
-  return d.data || [];
+// CMC v2/quotes/latest: belirli sembolleri açıkça istiyoruz, market cap sıralamasından bağımsız
+// Aynı sembollü birden fazla coin varsa (ONE → Harmony + BigONE...) dizi olarak döner,
+// en düşük cmc_rank (en yüksek piyasa değerli) olanı seçeriz.
+async function fetchQuotes(symbols) {
+  const CHUNK = 100;  // CMC tek çağrıda max ~100 sembol
+  const chunks = [];
+  for (let i = 0; i < symbols.length; i += CHUNK) chunks.push(symbols.slice(i, i + CHUNK));
+  const results = await Promise.all(chunks.map(async (chunk) => {
+    const r = await fetch(`${WORKER_URL}/cmc/quotes?symbol=${chunk.join(",")}&convert=USD`);
+    if (!r.ok) throw new Error("quotes HTTP " + r.status);
+    const d = await r.json();
+    if (d.status?.error_code !== 0) {
+      throw new Error("CMC: " + (d.status?.error_message || "bilinmeyen hata"));
+    }
+    return d.data || {};
+  }));
+  return Object.assign({}, ...results);
 }
 
 async function fetchUsdTry() {
@@ -579,8 +588,9 @@ async function fetchAll(manual = false) {
   statusDot.style.boxShadow = "0 0 10px var(--accent)";
 
   try {
-    const [listings, fx] = await Promise.all([
-      fetchListings(),
+    const allSyms = COINS.map(c => c.sym);
+    const [quotesData, fx] = await Promise.all([
+      fetchQuotes(allSyms),
       manual || usdTryRate == null ? fetchUsdTry() : Promise.resolve(usdTryRate)
     ]);
     if (fx) {
@@ -588,15 +598,17 @@ async function fetchAll(manual = false) {
       document.getElementById("usdTry").textContent = "₺" + fx.toFixed(2);
     }
 
-    // CMC listings → bizim tokenlere göre eşle
-    // İlk eşleşme kazansın: listings market_cap'e göre sıralı, yani aynı
-    // sembolden birden fazla coin varsa (ONE = Harmony / BigONE / ...)
-    // en yüksek piyasa değerli olan ilk gelir, doğru olan odur.
+    // Sembol başına en yüksek piyasa değerli (en düşük cmc_rank) coin'i seç
     const bySym = {};
-    for (const item of listings) {
-      if (SYM_SET.has(item.symbol) && !bySym[item.symbol]) {
-        bySym[item.symbol] = item;
-      }
+    for (const sym of allSyms) {
+      const arr = quotesData[sym];
+      if (!Array.isArray(arr) || arr.length === 0) continue;
+      const best = arr.reduce((a, b) => {
+        const ra = a.cmc_rank ?? 1e9;
+        const rb = b.cmc_rank ?? 1e9;
+        return ra <= rb ? a : b;
+      });
+      bySym[sym] = best;
     }
 
     let totalVol = 0, ups = 0, downs = 0, live = 0;
