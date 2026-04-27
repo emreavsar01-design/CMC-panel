@@ -143,6 +143,46 @@
   .reset-link {
     color: var(--text-dim); font-size: 12px; cursor: pointer; text-decoration: underline;
   }
+
+  /* Borsa filtre chip'leri ve rozetleri */
+  .exchange-bar {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px;
+  }
+  .exchange-bar .label {
+    font-size: 12px; color: var(--text-dim); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-right: 4px;
+  }
+  .ex-chip {
+    background: var(--bg-card); border: 1px solid var(--border); color: var(--text-dim);
+    padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;
+    user-select: none; transition: all 0.15s; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .ex-chip:hover { border-color: var(--blue); color: var(--text); }
+  .ex-chip.active { color: #fff; border-color: transparent; font-weight: 600; }
+  .ex-chip.active[data-ex="binance"] { background: #f0b90b; color: #000; }
+  .ex-chip.active[data-ex="okx"]     { background: #000; border: 1px solid #fff; color: #fff; }
+  .ex-chip.active[data-ex="paribu"]  { background: #ff5b00; color: #fff; }
+  .ex-chip.active[data-ex="btcturk"] { background: #1d6efc; color: #fff; }
+  .ex-chip.active[data-ex="none"]    { background: var(--text-dim); color: #000; }
+  .ex-chip-count { opacity: 0.6; font-size: 10px; }
+
+  .ex-badges {
+    display: flex; gap: 5px; margin-bottom: 10px; padding-top: 8px;
+    border-top: 1px dashed var(--border);
+  }
+  .ex-badge {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    background: var(--bg); color: var(--border);
+    border: 1px solid var(--border);
+    transition: all 0.15s;
+  }
+  .ex-badge.has[data-ex="binance"] { background: #f0b90b; color: #000; border-color: #f0b90b; }
+  .ex-badge.has[data-ex="okx"]     { background: #000; color: #fff; border-color: #fff; }
+  .ex-badge.has[data-ex="paribu"]  { background: #ff5b00; color: #fff; border-color: #ff5b00; }
+  .ex-badge.has[data-ex="btcturk"] { background: #1d6efc; color: #fff; border-color: #1d6efc; }
 </style>
 </head>
 <body>
@@ -205,6 +245,15 @@
       <option value="mcap-desc">Sırala: Piyasa Değeri ↓</option>
     </select>
     <span class="filter-info" id="filterInfo"></span>
+  </div>
+
+  <div class="exchange-bar" id="exchangeBar">
+    <span class="label">Borsa filtresi:</span>
+    <span class="ex-chip" data-ex="binance" onclick="toggleExchangeFilter('binance')">Binance <span class="ex-chip-count" id="cnt-binance">—</span></span>
+    <span class="ex-chip" data-ex="okx"     onclick="toggleExchangeFilter('okx')">OKX <span class="ex-chip-count" id="cnt-okx">—</span></span>
+    <span class="ex-chip" data-ex="paribu"  onclick="toggleExchangeFilter('paribu')">Paribu <span class="ex-chip-count" id="cnt-paribu">—</span></span>
+    <span class="ex-chip" data-ex="btcturk" onclick="toggleExchangeFilter('btcturk')">BTCTurk <span class="ex-chip-count" id="cnt-btcturk">—</span></span>
+    <span class="ex-chip" data-ex="none"    onclick="toggleExchangeFilter('none')">Hiçbirinde yok <span class="ex-chip-count" id="cnt-none">—</span></span>
   </div>
 
   <div class="grid" id="cardsGrid">
@@ -341,6 +390,79 @@ async function fetchUsdTry() {
 }
 
 // ============================================================
+// BORSA LİSTELEMELERİ
+// ============================================================
+const EXCHANGES = ["binance", "okx", "paribu", "btcturk"];
+const exchangeMap = {};   // { BTC: { binance: true, okx: true, ... }, ... }
+const exchangeFilters = new Set();  // aktif chip'ler
+
+async function fetchExchanges() {
+  try {
+    const r = await fetch(`${WORKER_URL}/exchanges/listings`);
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json();
+    const sets = {
+      binance: new Set(d.binance || []),
+      okx:     new Set(d.okx || []),
+      paribu:  new Set(d.paribu || []),
+      btcturk: new Set(d.btcturk || []),
+    };
+    // her coin için var/yok haritası
+    let cntInList = { binance: 0, okx: 0, paribu: 0, btcturk: 0, none: 0 };
+    COINS.forEach(c => {
+      const m = {};
+      let any = false;
+      for (const ex of EXCHANGES) {
+        m[ex] = sets[ex].has(c.sym);
+        if (m[ex]) { cntInList[ex]++; any = true; }
+      }
+      if (!any) cntInList.none++;
+      exchangeMap[c.sym] = m;
+      // rozet UI güncelle
+      for (const ex of EXCHANGES) {
+        const el = document.getElementById(`ex-${c.sym}-${ex}`);
+        if (el) {
+          if (m[ex]) el.classList.add("has");
+          else el.classList.remove("has");
+        }
+      }
+    });
+    // chip sayaçları
+    for (const ex of EXCHANGES) {
+      const el = document.getElementById(`cnt-${ex}`);
+      if (el) el.textContent = cntInList[ex];
+    }
+    document.getElementById("cnt-none").textContent = cntInList.none;
+  } catch (e) {
+    console.warn("Borsa listeleri alınamadı:", e);
+  }
+}
+
+function toggleExchangeFilter(ex) {
+  // "none" chip'i diğerleriyle karışmasın — açıldığında diğerleri kapanır, açıkken kapatılırsa serbest
+  const el = document.querySelector(`.ex-chip[data-ex="${ex}"]`);
+  if (exchangeFilters.has(ex)) {
+    exchangeFilters.delete(ex);
+    el.classList.remove("active");
+  } else {
+    if (ex === "none") {
+      // none açılıyorsa diğer hepsini kapat
+      EXCHANGES.forEach(e => {
+        exchangeFilters.delete(e);
+        document.querySelector(`.ex-chip[data-ex="${e}"]`)?.classList.remove("active");
+      });
+    } else {
+      // bir borsa seçilirse none kapansın
+      exchangeFilters.delete("none");
+      document.querySelector(`.ex-chip[data-ex="none"]`)?.classList.remove("active");
+    }
+    exchangeFilters.add(ex);
+    el.classList.add("active");
+  }
+  applySortAndFilter();
+}
+
+// ============================================================
 // CARD RENDER
 // ============================================================
 const fmtUSD = (n) => {
@@ -390,6 +512,12 @@ function buildCard(coin) {
       <div class="change-cell"><span class="lbl">1s</span><span class="val muted" id="ch1h-${coin.sym}">—</span></div>
       <div class="change-cell"><span class="lbl">24s</span><span class="val muted" id="ch24h-${coin.sym}">—</span></div>
       <div class="change-cell"><span class="lbl">7g</span><span class="val muted" id="ch7d-${coin.sym}">—</span></div>
+    </div>
+    <div class="ex-badges" title="Borsa listelemeleri">
+      <span class="ex-badge" data-ex="binance" id="ex-${coin.sym}-binance" title="Binance">B</span>
+      <span class="ex-badge" data-ex="okx"     id="ex-${coin.sym}-okx"     title="OKX">O</span>
+      <span class="ex-badge" data-ex="paribu"  id="ex-${coin.sym}-paribu"  title="Paribu">P</span>
+      <span class="ex-badge" data-ex="btcturk" id="ex-${coin.sym}-btcturk" title="BTCTurk">T</span>
     </div>
     <div class="stats">
       <div><div class="stat-label">24s Hacim</div><div class="stat-value" id="vol-${coin.sym}">—</div></div>
@@ -529,12 +657,28 @@ function applySortAndFilter() {
 
   let visible = 0;
   cards.forEach(c => {
-    const match = !q || c.dataset.sym.toLowerCase().includes(q) || c.dataset.name.includes(q);
+    const sym = c.dataset.sym;
+    const textMatch = !q || sym.toLowerCase().includes(q) || c.dataset.name.includes(q);
+    let exMatch = true;
+    if (exchangeFilters.size > 0) {
+      const m = exchangeMap[sym] || {};
+      if (exchangeFilters.has("none")) {
+        // hiçbirinde olmayanları göster
+        exMatch = EXCHANGES.every(ex => !m[ex]);
+      } else {
+        // seçilen tüm borsalarda olanları göster (AND)
+        exMatch = [...exchangeFilters].every(ex => m[ex]);
+      }
+    }
+    const match = textMatch && exMatch;
     c.classList.toggle("hidden", !match);
     if (match) visible++;
   });
+  const parts = [];
+  if (q) parts.push(`"${q}"`);
+  if (exchangeFilters.size > 0) parts.push([...exchangeFilters].join("+"));
   document.getElementById("filterInfo").textContent =
-    q ? `${visible} / ${COINS.length} eşleşti` : "";
+    parts.length ? `${visible} / ${COINS.length} eşleşti (${parts.join(" · ")})` : "";
 }
 
 // ============================================================
@@ -547,6 +691,7 @@ function init() {
   document.getElementById("searchInput").addEventListener("input", applySortAndFilter);
   document.getElementById("sortSelect").addEventListener("change", applySortAndFilter);
   fetchAll(true);
+  fetchExchanges();   // borsa listelemeleri (6 saat cache, paralel)
   setInterval(() => fetchAll(false), REFRESH_MS);
 }
 
