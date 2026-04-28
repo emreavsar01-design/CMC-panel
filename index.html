@@ -347,7 +347,6 @@ const COINS = [
   { sym:"XRP", name:"Ripple" }, { sym:"XTZ", name:"Tezos" },
   { sym:"ZIL", name:"Zilliqa" },
 ];
-const SYM_SET = new Set(COINS.map(c => c.sym));
 
 const BRAND = {
   BTC:"#f7931a", ETH:"#627eea", SOL:"#9945ff", XRP:"#23292f", BNB:"#f0b90b",
@@ -442,6 +441,7 @@ async function fetchExchanges() {
       if (el) el.textContent = cntInList[ex];
     }
     document.getElementById("cnt-none").textContent = cntInList.none;
+    applySortAndFilter();
   } catch (e) {
     console.warn("Borsa listeleri alınamadı:", e);
   }
