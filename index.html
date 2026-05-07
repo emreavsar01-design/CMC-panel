@@ -89,7 +89,7 @@
   }
   .list-header {
     display: grid;
-    grid-template-columns: 40px minmax(160px,2fr) 120px 110px 68px 68px 68px 110px 110px 120px 100px;
+    grid-template-columns: 40px minmax(160px,2fr) 120px 110px 68px 68px 68px 110px 110px 120px 160px;
     padding: 10px 16px;
     font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px;
     border-bottom: 1px solid var(--border); background: var(--bg);
@@ -97,7 +97,7 @@
   }
   .list-row {
     display: grid;
-    grid-template-columns: 40px minmax(160px,2fr) 120px 110px 68px 68px 68px 110px 110px 120px 100px;
+    grid-template-columns: 40px minmax(160px,2fr) 120px 110px 68px 68px 68px 110px 110px 120px 160px;
     padding: 9px 16px; align-items: center;
     border-bottom: 1px solid var(--border); transition: background 0.15s;
   }
@@ -128,6 +128,7 @@
   .status-badge.p  { background:rgba(247,166,0,.15);  color:var(--accent); }
   .status-badge.t  { background:rgba(79,140,255,.10); color:#8ab4f8; }
   .status-badge.dl { background:rgba(255,91,106,.15); color:var(--red); }
+  .status-badge.nl { background:rgba(150,150,210,.15); color:#a0a0d8; }
   .loader { text-align: center; padding: 40px; color: var(--text-dim); }
   .error {
     background: rgba(255, 91, 106, 0.1); border: 1px solid var(--red); color: var(--red);
@@ -167,6 +168,8 @@
   .ex-chip.active[data-ex="okx"]     { background: #000; border: 1px solid #fff; color: #fff; }
   .ex-chip.active[data-ex="paribu"]  { background: #ff5b00; color: #fff; }
   .ex-chip.active[data-ex="btcturk"] { background: #1d6efc; color: #fff; }
+  .ex-chip.active[data-ex="stablex"] { background: #cc1111; color: #fff; }
+  .ex-chip.active[data-ex="garanti"] { background: #1a7a3c; color: #fff; }
   .ex-chip.active[data-ex="none"]    { background: var(--text-dim); color: #000; }
   .ex-chip-count { opacity: 0.6; font-size: 10px; }
   .ex-chip.active[data-st="Platform - Banka"]  { background:var(--green);  color:#000; }
@@ -174,6 +177,7 @@
   .ex-chip.active[data-st="Platform"]          { background:var(--accent);  color:#000; }
   .ex-chip.active[data-st="Taurus"]            { background:#8ab4f8;        color:#000; }
   .ex-chip.active[data-st="Delist"]            { background:var(--red);     color:#fff; }
+  .ex-chip.active[data-st="Nothing List"]     { background:#3a3a6a;        color:#c0c0ff; }
 
   .ex-badges { display: flex; gap: 4px; }
   .ex-badge {
@@ -188,6 +192,8 @@
   .ex-badge.has[data-ex="okx"]     { background: #000; color: #fff; border-color: #fff; }
   .ex-badge.has[data-ex="paribu"]  { background: #ff5b00; color: #fff; border-color: #ff5b00; }
   .ex-badge.has[data-ex="btcturk"] { background: #1d6efc; color: #fff; border-color: #1d6efc; }
+  .ex-badge.has[data-ex="stablex"] { background: #cc1111; color: #fff; border-color: #cc1111; }
+  .ex-badge.has[data-ex="garanti"] { background: #1a7a3c; color: #fff; border-color: #1a7a3c; }
 </style>
 </head>
 <body>
@@ -204,7 +210,7 @@
     <div class="status">
       <span class="status-dot" id="statusDot"></span>
       <span id="statusText">Yükleniyor…</span>
-      <button class="refresh-btn" onclick="fetchAll(true)">↻ Şimdi Yenile</button>
+      <button class="refresh-btn" onclick="fetchAll(true); fetchTop500()">↻ Şimdi Yenile</button>
       <button class="export-btn" onclick="exportCSV()">⬇ CSV İndir</button>
     </div>
   </header>
@@ -259,6 +265,8 @@
     <span class="ex-chip" data-ex="okx"     onclick="toggleExchangeFilter('okx')">OKX <span class="ex-chip-count" id="cnt-okx">—</span></span>
     <span class="ex-chip" data-ex="paribu"  onclick="toggleExchangeFilter('paribu')">Paribu <span class="ex-chip-count" id="cnt-paribu">—</span></span>
     <span class="ex-chip" data-ex="btcturk" onclick="toggleExchangeFilter('btcturk')">BTCTurk <span class="ex-chip-count" id="cnt-btcturk">—</span></span>
+    <span class="ex-chip" data-ex="stablex" onclick="toggleExchangeFilter('stablex')">Stablex <span class="ex-chip-count" id="cnt-stablex">—</span></span>
+    <span class="ex-chip" data-ex="garanti" onclick="toggleExchangeFilter('garanti')">Garanti Kripto <span class="ex-chip-count" id="cnt-garanti">—</span></span>
     <span class="ex-chip" data-ex="none"    onclick="toggleExchangeFilter('none')">Hiçbirinde yok <span class="ex-chip-count" id="cnt-none">—</span></span>
   </div>
 
@@ -269,6 +277,7 @@
     <span class="ex-chip" data-st="Platform"          onclick="toggleStatusFilter('Platform')">Platform</span>
     <span class="ex-chip" data-st="Taurus"            onclick="toggleStatusFilter('Taurus')">Taurus</span>
     <span class="ex-chip" data-st="Delist"            onclick="toggleStatusFilter('Delist')">Delist</span>
+    <span class="ex-chip" data-st="Nothing List"      onclick="toggleStatusFilter('Nothing List')">Nothing List</span>
   </div>
 
   <div class="coin-list" id="cardsGrid">
@@ -555,6 +564,7 @@ function colorFor(sym) {
 // ============================================================
 const tickData = {};   // { sym: { price, change1h, change24h, change7d, vol, mcap, rank } }
 let usdTryRate = null;
+let nothingListCoins = [];
 
 // CMC v2/quotes/latest: belirli sembolleri açıkça istiyoruz, market cap sıralamasından bağımsız
 // Aynı sembollü birden fazla coin varsa (ONE → Harmony + BigONE...) dizi olarak döner,
@@ -586,9 +596,15 @@ async function fetchUsdTry() {
 // ============================================================
 // BORSA LİSTELEMELERİ
 // ============================================================
-const EXCHANGES = ["binance", "okx", "paribu", "btcturk"];
+const EXCHANGES = ["binance", "okx", "paribu", "btcturk", "stablex", "garanti"];
 const exchangeMap = {};   // { BTC: { binance: true, okx: true, ... }, ... }
 const exchangeFilters = new Set();  // aktif chip'ler
+let exchangeSets = null;  // fetchExchanges'tan sonra kullanılabilir olur
+
+// Stablex (stablex.com.tr — Akbank iştiraki)
+const STABLEX_SYMS = new Set(["BTC","ETH","XRP","XLM","ADA","SOL","DOGE","AAVE","ALGO","ANKR","APE","ARB","ATOM","AUDIO","AVAX","BONK","FLOKI","GALA","LINK","ONDO","PENGU","STX","USDT"]);
+// Garanti BBVA Kripto (garantibbvakripto.com.tr)
+const GARANTI_SYMS = new Set(["BTC","ETH","SOL","XRP","AVAX","USDC","CHZ","ARB"]);
 
 async function fetchExchanges() {
   try {
@@ -600,9 +616,12 @@ async function fetchExchanges() {
       okx:     new Set(d.okx || []),
       paribu:  new Set(d.paribu || []),
       btcturk: new Set(d.btcturk || []),
+      stablex: STABLEX_SYMS,
+      garanti: GARANTI_SYMS,
     };
+    exchangeSets = sets;
     // her coin için var/yok haritası
-    let cntInList = { binance: 0, okx: 0, paribu: 0, btcturk: 0, none: 0 };
+    let cntInList = { binance: 0, okx: 0, paribu: 0, btcturk: 0, stablex: 0, garanti: 0, none: 0 };
     const countedEx = new Set();
     COINS.forEach(c => {
       const m = {};
@@ -633,9 +652,102 @@ async function fetchExchanges() {
       if (el) el.textContent = cntInList[ex];
     }
     document.getElementById("cnt-none").textContent = cntInList.none;
+    updateExchangeBadges(nothingListCoins);  // fetchTop500 önce bittiyse backfill
     applySortAndFilter();
   } catch (e) {
     console.warn("Borsa listeleri alınamadı:", e);
+  }
+}
+
+function updateExchangeBadges(coins) {
+  if (!exchangeSets || !coins.length) return;
+  coins.forEach(c => {
+    if (!exchangeMap[c.sym]) {
+      const m = {};
+      for (const ex of EXCHANGES) m[ex] = exchangeSets[ex].has(c.sym);
+      exchangeMap[c.sym] = m;
+    }
+    const m = exchangeMap[c.sym];
+    for (const ex of EXCHANGES) {
+      const el = document.getElementById(`ex-${c.id}-${ex}`);
+      if (el) m[ex] ? el.classList.add("has") : el.classList.remove("has");
+    }
+  });
+  // Chip sayaçlarını COINS + nothingListCoins üzerinden yeniden hesapla
+  const cnt = { binance: 0, okx: 0, paribu: 0, btcturk: 0, stablex: 0, garanti: 0, none: 0 };
+  const seen = new Set();
+  COINS.concat(nothingListCoins).forEach(c => {
+    if (seen.has(c.sym)) return;
+    seen.add(c.sym);
+    const m = exchangeMap[c.sym] || {};
+    let any = false;
+    for (const ex of EXCHANGES) { if (m[ex]) { cnt[ex]++; any = true; } }
+    if (!any) cnt.none++;
+  });
+  for (const ex of EXCHANGES) {
+    const el = document.getElementById(`cnt-${ex}`);
+    if (el) el.textContent = cnt[ex];
+  }
+  document.getElementById("cnt-none").textContent = cnt.none;
+}
+
+// ============================================================
+// CMC İLK 500 — NOTHING LIST
+// ============================================================
+// Worker'da /cmc/listings?limit=500&convert=USD endpointi gerekir.
+// CMC: GET /v1/cryptocurrency/listings/latest?limit=500&convert=USD
+async function fetchTop500() {
+  try {
+    const r = await fetch(`${WORKER_URL}/cmc/listings?limit=500&convert=USD`);
+    if (!r.ok) throw new Error("listings HTTP " + r.status);
+    const d = await r.json();
+    if (d.status?.error_code !== 0) throw new Error("CMC: " + (d.status?.error_message || "bilinmeyen hata"));
+
+    const existingSyms = new Set(COINS.map(c => c.sym));
+    const grid = document.getElementById("cardsGrid");
+
+    // API'den gelen coinleri sembol → veri haritasına al (mevcut listede olmayanlar)
+    const freshItems = {};
+    (d.data || []).forEach(item => {
+      if (!existingSyms.has(item.symbol)) freshItems[item.symbol] = item;
+    });
+
+    // Daha önce eklenmemiş yeni coinleri listeye ve grid'e ekle
+    Object.values(freshItems).forEach(item => {
+      if (!nothingListCoins.find(c => c.sym === item.symbol)) {
+        const coin = { id: `${item.symbol}__NL`, sym: item.symbol, name: item.name, network: "—", status: "Nothing List" };
+        nothingListCoins.push(coin);
+        grid.appendChild(buildCard(coin));
+      }
+    });
+
+    // Borsa rozetlerini güncelle (fetchExchanges önce bittiyse uygula)
+    updateExchangeBadges(nothingListCoins);
+
+    // Tüm Nothing List kartlarını fiyat verisiyle güncelle
+    nothingListCoins.forEach(coin => updateCard(coin, freshItems[coin.sym] || null));
+
+    // Özet istatistikleri tüm coinler (COINS + nothingListCoins) üzerinden güncelle
+    let totalVol = 0, ups = 0, downs = 0, live = 0;
+    const counted = new Set();
+    COINS.concat(nothingListCoins).forEach(c => {
+      const t = tickData[c.sym];
+      if (t && !counted.has(c.sym)) {
+        counted.add(c.sym);
+        live++;
+        totalVol += t.vol || 0;
+        if ((t.change24h ?? 0) >= 0) ups++; else downs++;
+      }
+    });
+    document.getElementById("totalCount").textContent = COINS.length + nothingListCoins.length;
+    document.getElementById("liveCount").textContent = live;
+    document.getElementById("upCount").textContent = ups;
+    document.getElementById("downCount").textContent = downs;
+    document.getElementById("totalVolume").textContent = fmtBig(totalVol);
+
+    applySortAndFilter();
+  } catch (e) {
+    console.warn("Top 500 listesi alınamadı:", e);
   }
 }
 
@@ -708,6 +820,7 @@ function statusClass(s) {
   if (s === "Platform") return "p";
   if (s === "Taurus") return "t";
   if (s === "Delist") return "dl";
+  if (s === "Nothing List") return "nl";
   return "";
 }
 
@@ -739,6 +852,8 @@ function buildCard(coin) {
       <span class="ex-badge" data-ex="okx"     id="ex-${coin.id}-okx"     title="OKX">O</span>
       <span class="ex-badge" data-ex="paribu"  id="ex-${coin.id}-paribu"  title="Paribu">P</span>
       <span class="ex-badge" data-ex="btcturk" id="ex-${coin.id}-btcturk" title="BTCTurk">T</span>
+      <span class="ex-badge" data-ex="stablex" id="ex-${coin.id}-stablex" title="Stablex">S</span>
+      <span class="ex-badge" data-ex="garanti" id="ex-${coin.id}-garanti" title="Garanti Kripto">G</span>
     </div>
   `;
   return el;
@@ -910,7 +1025,8 @@ function applySortAndFilter() {
     }
     let stMatch = true;
     if (statusFilters.size > 0) {
-      const coinData = COINS.find(co => co.id === c.id.slice(5));
+      const coinId = c.id.slice(5);
+      const coinData = COINS.find(co => co.id === coinId) || nothingListCoins.find(co => co.id === coinId);
       stMatch = coinData ? statusFilters.has(coinData.status) : false;
     }
     const match = textMatch && exMatch && stMatch;
@@ -922,7 +1038,7 @@ function applySortAndFilter() {
   if (exchangeFilters.size > 0) parts.push([...exchangeFilters].join("+"));
   if (statusFilters.size > 0) parts.push([...statusFilters].join("+"));
   document.getElementById("filterInfo").textContent =
-    parts.length ? `${visible} / ${COINS.length} eşleşti (${parts.join(" · ")})` : "";
+    parts.length ? `${visible} / ${COINS.length + nothingListCoins.length} eşleşti (${parts.join(" · ")})` : "";
 }
 
 // ============================================================
@@ -931,6 +1047,11 @@ function applySortAndFilter() {
 function exportCSV() {
   const BOM = "\uFEFF";
   const SEP = ";";
+  const toTR = (n, digits) => {
+    if (n == null || n === "") return "";
+    const s = digits != null ? Number(n).toFixed(digits) : String(n);
+    return s.replace(".", ",");
+  };
   const headers = [
     "Sembol","Ad","Ağ","Durum","Fiyat USD","Fiyat TRY",
     "Değişim 1s %","Değişim 24s %","Değişim 7g %",
@@ -952,11 +1073,9 @@ function exportCSV() {
     const tryPrice = (t.price != null && usdTryRate) ? +(t.price * usdTryRate).toFixed(4) : null;
     const row = [
       c.sym, c.name, c.network, c.status,
-      t.price    ?? "", tryPrice   ?? "",
-      t.change1h  != null ? t.change1h.toFixed(2)  : "",
-      t.change24h != null ? t.change24h.toFixed(2) : "",
-      t.change7d  != null ? t.change7d.toFixed(2)  : "",
-      t.vol  ?? "", t.mcap ?? "", t.rank ?? "",
+      toTR(t.price), toTR(tryPrice, 4),
+      toTR(t.change1h, 2), toTR(t.change24h, 2), toTR(t.change7d, 2),
+      toTR(t.vol), toTR(t.mcap), t.rank ?? "",
       ex.binance ? "Evet" : "Hayır",
       ex.okx     ? "Evet" : "Hayır",
       ex.paribu  ? "Evet" : "Hayır",
@@ -983,8 +1102,10 @@ function init() {
   document.getElementById("searchInput").addEventListener("input", applySortAndFilter);
   document.getElementById("sortSelect").addEventListener("change", applySortAndFilter);
   fetchAll(true);
-  fetchExchanges();   // borsa listelemeleri (6 saat cache, paralel)
+  fetchExchanges();
+  fetchTop500();
   setInterval(() => fetchAll(false), REFRESH_MS);
+  setInterval(() => fetchTop500(), REFRESH_MS);
 }
 
 init();
