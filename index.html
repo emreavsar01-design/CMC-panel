@@ -122,9 +122,9 @@
   .coin-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .coin-symbol { font-size: 11px; color: var(--text-dim); }
   .coin-network { font-size: 10px; color: var(--text-dim); margin-top: 1px; }
+  .status-badges-cell { display:flex; flex-wrap:wrap; gap:3px; align-items:center; padding-right:6px; justify-content:flex-end; }
   .status-badge { font-size:10px; font-weight:600; padding:2px 7px; border-radius:10px; white-space:nowrap; display:inline-block; }
   .status-badge.pb { background:rgba(38,208,124,.15); color:var(--green); }
-  .status-badge.pt { background:rgba(79,140,255,.15); color:var(--blue); }
   .status-badge.p  { background:rgba(247,166,0,.15);  color:var(--accent); }
   .status-badge.t  { background:rgba(79,140,255,.10); color:#8ab4f8; }
   .status-badge.dl { background:rgba(255,91,106,.15); color:var(--red); }
@@ -172,12 +172,11 @@
   .ex-chip.active[data-ex="garanti"] { background: #1a7a3c; color: #fff; }
   .ex-chip.active[data-ex="none"]    { background: var(--text-dim); color: #000; }
   .ex-chip-count { opacity: 0.6; font-size: 10px; }
-  .ex-chip.active[data-st="Platform - Banka"]  { background:var(--green);  color:#000; }
-  .ex-chip.active[data-st="Platform - Taurus"] { background:var(--blue);   color:#fff; }
-  .ex-chip.active[data-st="Platform"]          { background:var(--accent);  color:#000; }
-  .ex-chip.active[data-st="Taurus"]            { background:#8ab4f8;        color:#000; }
-  .ex-chip.active[data-st="Delist"]            { background:var(--red);     color:#fff; }
-  .ex-chip.active[data-st="Nothing List"]     { background:#3a3a6a;        color:#c0c0ff; }
+  .ex-chip.active[data-st="Platform"]     { background:var(--accent); color:#000; }
+  .ex-chip.active[data-st="Banka"]        { background:var(--green);  color:#000; }
+  .ex-chip.active[data-st="Taurus"]       { background:var(--blue);   color:#fff; }
+  .ex-chip.active[data-st="Delist"]       { background:var(--red);    color:#fff; }
+  .ex-chip.active[data-st="Nothing List"] { background:#3a3a6a;       color:#c0c0ff; }
 
   .ex-badges { display: flex; gap: 4px; }
   .ex-badge {
@@ -272,12 +271,11 @@
 
   <div class="exchange-bar" id="statusBar">
     <span class="label">Durum filtresi:</span>
-    <span class="ex-chip" data-st="Platform - Banka"  onclick="toggleStatusFilter('Platform - Banka')">Platform - Banka</span>
-    <span class="ex-chip" data-st="Platform - Taurus" onclick="toggleStatusFilter('Platform - Taurus')">Platform - Taurus</span>
-    <span class="ex-chip" data-st="Platform"          onclick="toggleStatusFilter('Platform')">Platform</span>
-    <span class="ex-chip" data-st="Taurus"            onclick="toggleStatusFilter('Taurus')">Taurus</span>
-    <span class="ex-chip" data-st="Delist"            onclick="toggleStatusFilter('Delist')">Delist</span>
-    <span class="ex-chip" data-st="Nothing List"      onclick="toggleStatusFilter('Nothing List')">Nothing List</span>
+    <span class="ex-chip" data-st="Platform"     onclick="toggleStatusFilter('Platform')">Platform <span class="ex-chip-count" id="cnt-st-Platform">—</span></span>
+    <span class="ex-chip" data-st="Banka"        onclick="toggleStatusFilter('Banka')">Banka <span class="ex-chip-count" id="cnt-st-Banka">—</span></span>
+    <span class="ex-chip" data-st="Taurus"       onclick="toggleStatusFilter('Taurus')">Taurus <span class="ex-chip-count" id="cnt-st-Taurus">—</span></span>
+    <span class="ex-chip" data-st="Delist"       onclick="toggleStatusFilter('Delist')">Delist <span class="ex-chip-count" id="cnt-st-Delist">—</span></span>
+    <span class="ex-chip" data-st="Nothing List" onclick="toggleStatusFilter('Nothing List')">Nothing List <span class="ex-chip-count" id="cnt-st-NothingList">—</span></span>
   </div>
 
   <div class="coin-list" id="cardsGrid">
@@ -745,6 +743,7 @@ async function fetchTop500() {
     document.getElementById("downCount").textContent = downs;
     document.getElementById("totalVolume").textContent = fmtBig(totalVol);
 
+    computeStatusCounts();
     applySortAndFilter();
   } catch (e) {
     console.warn("Top 500 listesi alınamadı:", e);
@@ -815,13 +814,24 @@ const fmtPct = (n) => n == null || isNaN(n) ? "—" : (n >= 0 ? "+" : "") + n.to
 const pctClass = (n) => n == null ? "muted" : (n >= 0 ? "up" : "down");
 
 function statusClass(s) {
-  if (s === "Platform - Banka") return "pb";
-  if (s === "Platform - Taurus") return "pt";
-  if (s === "Platform") return "p";
-  if (s === "Taurus") return "t";
-  if (s === "Delist") return "dl";
+  if (s === "Platform")     return "p";
+  if (s === "Banka")        return "pb";
+  if (s === "Taurus")       return "t";
+  if (s === "Delist")       return "dl";
   if (s === "Nothing List") return "nl";
   return "";
+}
+
+function getStatusLists(status) {
+  switch (status) {
+    case "Platform - Banka":  return ["Platform", "Banka"];
+    case "Platform - Taurus": return ["Platform", "Taurus"];
+    case "Platform":          return ["Platform"];
+    case "Taurus":            return ["Taurus"];
+    case "Delist":            return ["Platform", "Delist"];
+    case "Nothing List":      return ["Nothing List"];
+    default:                  return [];
+  }
 }
 
 function buildCard(coin) {
@@ -830,6 +840,9 @@ function buildCard(coin) {
   el.id = "card-" + coin.id;
   el.dataset.sym = coin.sym;
   el.dataset.name = (coin.name + " " + coin.network).toLowerCase();
+  const statusBadges = getStatusLists(coin.status)
+    .map(l => `<span class="status-badge ${statusClass(l)}">${l}</span>`)
+    .join('');
   el.innerHTML = `
     <div class="row-rank" id="rank-${coin.id}">—</div>
     <div class="row-coin">
@@ -846,7 +859,7 @@ function buildCard(coin) {
     <div class="row-num"><span class="val muted" id="ch7d-${coin.id}">—</span></div>
     <div class="row-num" id="vol-${coin.id}">—</div>
     <div class="row-num" id="mcap-${coin.id}">—</div>
-    <div class="row-num"><span class="status-badge ${statusClass(coin.status)}">${coin.status}</span></div>
+    <div class="status-badges-cell">${statusBadges}</div>
     <div class="ex-badges" title="Borsa listelemeleri">
       <span class="ex-badge" data-ex="binance" id="ex-${coin.id}-binance" title="Binance">B</span>
       <span class="ex-badge" data-ex="okx"     id="ex-${coin.id}-okx"     title="OKX">O</span>
@@ -1027,7 +1040,9 @@ function applySortAndFilter() {
     if (statusFilters.size > 0) {
       const coinId = c.id.slice(5);
       const coinData = COINS.find(co => co.id === coinId) || nothingListCoins.find(co => co.id === coinId);
-      stMatch = coinData ? statusFilters.has(coinData.status) : false;
+      stMatch = coinData
+        ? getStatusLists(coinData.status).some(l => statusFilters.has(l))
+        : false;
     }
     const match = textMatch && exMatch && stMatch;
     c.classList.toggle("hidden", !match);
@@ -1093,12 +1108,31 @@ function exportCSV() {
 }
 
 // ============================================================
+// DURUM FİLTRESİ SAYAÇLARI
+// ============================================================
+function computeStatusCounts() {
+  const cnt = { Platform: 0, Banka: 0, Taurus: 0, Delist: 0, "Nothing List": 0 };
+  const seen = new Set();
+  COINS.concat(nothingListCoins).forEach(c => {
+    if (seen.has(c.sym)) return;
+    seen.add(c.sym);
+    getStatusLists(c.status).forEach(l => { if (cnt[l] != null) cnt[l]++; });
+  });
+  document.getElementById("cnt-st-Platform").textContent    = cnt["Platform"];
+  document.getElementById("cnt-st-Banka").textContent       = cnt["Banka"];
+  document.getElementById("cnt-st-Taurus").textContent      = cnt["Taurus"];
+  document.getElementById("cnt-st-Delist").textContent      = cnt["Delist"];
+  document.getElementById("cnt-st-NothingList").textContent = cnt["Nothing List"];
+}
+
+// ============================================================
 // BAŞLATMA
 // ============================================================
 function init() {
   document.getElementById("refreshLabel").textContent = Math.round(REFRESH_MS / 60000);
   document.getElementById("totalCount").textContent = COINS.length;
   renderGrid();
+  computeStatusCounts();
   document.getElementById("searchInput").addEventListener("input", applySortAndFilter);
   document.getElementById("sortSelect").addEventListener("change", applySortAndFilter);
   fetchAll(true);
