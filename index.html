@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kripto Canlı Panel — CoinMarketCap</title>
+<meta name="description" content="CoinMarketCap verisiyle canlı kripto para paneli — USD/TRY fiyat, değişim oranları, Binance/OKX/Paribu/BTCTurk/Fexobit/Stablex/Garanti Kripto borsa listelemeleri.">
+<meta property="og:title" content="Kripto Canlı Panel">
+<meta property="og:description" content="CoinMarketCap verisiyle canlı kripto para takip paneli — fiyat, değişim, borsa listelemeleri.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📈</text></svg>">
 <style>
   :root {
     --bg: #0b0e1a; --bg-card: #151a2e; --bg-card-hover: #1c2340;
@@ -170,6 +175,7 @@
   .ex-chip.active[data-ex="btcturk"] { background: #1d6efc; color: #fff; }
   .ex-chip.active[data-ex="stablex"] { background: #cc1111; color: #fff; }
   .ex-chip.active[data-ex="garanti"] { background: #1a7a3c; color: #fff; }
+  .ex-chip.active[data-ex="fexobit"] { background: #6639e4; color: #fff; }
   .ex-chip.active[data-ex="none"]    { background: var(--text-dim); color: #000; }
   .ex-chip-count { opacity: 0.6; font-size: 10px; }
   .ex-chip.active[data-st="Platform"]     { background:var(--accent); color:#000; }
@@ -193,6 +199,7 @@
   .ex-badge.has[data-ex="btcturk"] { background: #1d6efc; color: #fff; border-color: #1d6efc; }
   .ex-badge.has[data-ex="stablex"] { background: #cc1111; color: #fff; border-color: #cc1111; }
   .ex-badge.has[data-ex="garanti"] { background: #1a7a3c; color: #fff; border-color: #1a7a3c; }
+  .ex-badge.has[data-ex="fexobit"] { background: #6639e4; color: #fff; border-color: #6639e4; }
 </style>
 </head>
 <body>
@@ -266,6 +273,7 @@
     <span class="ex-chip" data-ex="btcturk" onclick="toggleExchangeFilter('btcturk')">BTCTurk <span class="ex-chip-count" id="cnt-btcturk">—</span></span>
     <span class="ex-chip" data-ex="stablex" onclick="toggleExchangeFilter('stablex')">Stablex <span class="ex-chip-count" id="cnt-stablex">—</span></span>
     <span class="ex-chip" data-ex="garanti" onclick="toggleExchangeFilter('garanti')">Garanti Kripto <span class="ex-chip-count" id="cnt-garanti">—</span></span>
+    <span class="ex-chip" data-ex="fexobit" onclick="toggleExchangeFilter('fexobit')">Fexobit <span class="ex-chip-count" id="cnt-fexobit">—</span></span>
     <span class="ex-chip" data-ex="none"    onclick="toggleExchangeFilter('none')">Hiçbirinde yok <span class="ex-chip-count" id="cnt-none">—</span></span>
   </div>
 
@@ -600,15 +608,18 @@ async function fetchUsdTry() {
 // ============================================================
 // BORSA LİSTELEMELERİ
 // ============================================================
-const EXCHANGES = ["binance", "okx", "paribu", "btcturk", "stablex", "garanti"];
+const EXCHANGES = ["binance", "okx", "paribu", "btcturk", "stablex", "garanti", "fexobit"];
 const exchangeMap = {};   // { BTC: { binance: true, okx: true, ... }, ... }
 const exchangeFilters = new Set();  // aktif chip'ler
 let exchangeSets = null;  // fetchExchanges'tan sonra kullanılabilir olur
 
-// Stablex (stablex.com.tr — Akbank iştiraki)
-const STABLEX_SYMS = new Set(["BTC","ETH","XRP","XLM","ADA","SOL","DOGE","AAVE","ALGO","ANKR","APE","ARB","ATOM","AUDIO","AVAX","BONK","FLOKI","GALA","LINK","ONDO","PENGU","STX","USDT"]);
-// Garanti BBVA Kripto (garantibbvakripto.com.tr)
-const GARANTI_SYMS = new Set(["BTC","ETH","SOL","XRP","AVAX","USDC","CHZ","ARB"]);
+// Stablex (stablex.com.tr — Akbank iştiraki). Açık API yok; stablex.com.tr/piyasalar
+// sayfasındaki TRY paritelerinden çıkarıldı. Son doğrulama: 2026-08-10.
+const STABLEX_SYMS = new Set(["AAVE","ADA","ALGO","ANKR","APE","ARB","ATOM","AUDIO","AVAX","AXS","BAT","BONK","BTC","CHZ","COMP","CRV","DOGE","DOT","EIGEN","ENS","ETH","ETHFI","FET","FLOKI","GALA","GRT","IMX","IO","JASMY","JTO","JUP","LDO","LINK","LPT","LTC","MANA","ONDO","PAXG","PENDLE","PENGU","PEPE","POL","PUMP","PYTH","RENDER","SAND","SHIB","SOL","STORJ","STRK","STX","TRX","UNI","USDC","USDT","WIF","WLD","XLM","XRP","XTZ","ZRO","ZRX"]);
+// Garanti BBVA Kripto (garantibbvakripto.com.tr). Açık API yok; sitedeki SPA'dan
+// sembol listesi çekilemedi, kullanıcı tarafından platformdan elle doğrulandı.
+// Son doğrulama: 2026-08-10.
+const GARANTI_SYMS = new Set(["BTC","ETH","USDT","USDC","XRP","SOL","ADA","LTC","ONDO","AVAX","UNI","GRT","AAVE","ENA","LDO","DOT","LINK","PENDLE","CHZ","SAND","MANA","POL","INJ","ENS","QNT"]);
 
 async function fetchExchanges() {
   try {
@@ -622,10 +633,11 @@ async function fetchExchanges() {
       btcturk: new Set(d.btcturk || []),
       stablex: STABLEX_SYMS,
       garanti: GARANTI_SYMS,
+      fexobit: new Set(d.fexobit || []),
     };
     exchangeSets = sets;
     // her coin için var/yok haritası
-    let cntInList = { binance: 0, okx: 0, paribu: 0, btcturk: 0, stablex: 0, garanti: 0, none: 0 };
+    let cntInList = { binance: 0, okx: 0, paribu: 0, btcturk: 0, stablex: 0, garanti: 0, fexobit: 0, none: 0 };
     const countedEx = new Set();
     COINS.forEach(c => {
       const m = {};
@@ -678,7 +690,7 @@ function updateExchangeBadges(coins) {
     }
   });
   // Chip sayaçlarını COINS + nothingListCoins üzerinden yeniden hesapla
-  const cnt = { binance: 0, okx: 0, paribu: 0, btcturk: 0, stablex: 0, garanti: 0, none: 0 };
+  const cnt = { binance: 0, okx: 0, paribu: 0, btcturk: 0, stablex: 0, garanti: 0, fexobit: 0, none: 0 };
   const seen = new Set();
   COINS.concat(nothingListCoins).forEach(c => {
     if (seen.has(c.sym)) return;
@@ -693,6 +705,24 @@ function updateExchangeBadges(coins) {
     if (el) el.textContent = cnt[ex];
   }
   document.getElementById("cnt-none").textContent = cnt.none;
+}
+
+// ============================================================
+// DURUM FİLTRESİ SAYAÇLARI
+// ============================================================
+function computeStatusCounts() {
+  const cnt = { Platform: 0, Banka: 0, Taurus: 0, Delist: 0, "Nothing List": 0 };
+  const seen = new Set();
+  COINS.concat(nothingListCoins).forEach(c => {
+    if (seen.has(c.sym)) return;
+    seen.add(c.sym);
+    getStatusLists(c.status).forEach(l => { if (cnt[l] != null) cnt[l]++; });
+  });
+  document.getElementById("cnt-st-Platform").textContent    = cnt["Platform"];
+  document.getElementById("cnt-st-Banka").textContent       = cnt["Banka"];
+  document.getElementById("cnt-st-Taurus").textContent      = cnt["Taurus"];
+  document.getElementById("cnt-st-Delist").textContent      = cnt["Delist"];
+  document.getElementById("cnt-st-NothingList").textContent = cnt["Nothing List"];
 }
 
 // ============================================================
@@ -820,10 +850,10 @@ const fmtPct = (n) => n == null || isNaN(n) ? "—" : (n >= 0 ? "+" : "") + n.to
 const pctClass = (n) => n == null ? "muted" : (n >= 0 ? "up" : "down");
 
 function statusClass(s) {
-  if (s === "Platform")     return "p";
-  if (s === "Banka")        return "pb";
-  if (s === "Taurus")       return "t";
-  if (s === "Delist")       return "dl";
+  if (s === "Platform")    return "p";
+  if (s === "Banka")       return "pb";
+  if (s === "Taurus")      return "t";
+  if (s === "Delist")      return "dl";
   if (s === "Nothing List") return "nl";
   return "";
 }
@@ -873,6 +903,7 @@ function buildCard(coin) {
       <span class="ex-badge" data-ex="btcturk" id="ex-${coin.id}-btcturk" title="BTCTurk">T</span>
       <span class="ex-badge" data-ex="stablex" id="ex-${coin.id}-stablex" title="Stablex">S</span>
       <span class="ex-badge" data-ex="garanti" id="ex-${coin.id}-garanti" title="Garanti Kripto">G</span>
+      <span class="ex-badge" data-ex="fexobit" id="ex-${coin.id}-fexobit" title="Fexobit">F</span>
     </div>
   `;
   return el;
@@ -1077,7 +1108,7 @@ function exportCSV() {
     "Sembol","Ad","Ağ","Durum","Fiyat USD","Fiyat TRY",
     "Değişim 1s %","Değişim 24s %","Değişim 7g %",
     "24s Hacim USD","Piyasa Değeri USD","CMC Sırası",
-    "Binance","OKX","Paribu","BTCTurk"
+    "Binance","OKX","Paribu","BTCTurk","Stablex","Garanti Kripto","Fexobit"
   ];
 
   const esc = v => {
@@ -1101,6 +1132,9 @@ function exportCSV() {
       ex.okx     ? "Evet" : "Hayır",
       ex.paribu  ? "Evet" : "Hayır",
       ex.btcturk ? "Evet" : "Hayır",
+      ex.stablex ? "Evet" : "Hayır",
+      ex.garanti ? "Evet" : "Hayır",
+      ex.fexobit ? "Evet" : "Hayır",
     ];
     lines.push(row.map(esc).join(SEP));
   });
@@ -1111,24 +1145,6 @@ function exportCSV() {
   a.download = `kripto-panel-${new Date().toISOString().slice(0,19).replace(/[T:]/g,"-")}.csv`;
   a.click();
   URL.revokeObjectURL(a.href);
-}
-
-// ============================================================
-// DURUM FİLTRESİ SAYAÇLARI
-// ============================================================
-function computeStatusCounts() {
-  const cnt = { Platform: 0, Banka: 0, Taurus: 0, Delist: 0, "Nothing List": 0 };
-  const seen = new Set();
-  COINS.concat(nothingListCoins).forEach(c => {
-    if (seen.has(c.sym)) return;
-    seen.add(c.sym);
-    getStatusLists(c.status).forEach(l => { if (cnt[l] != null) cnt[l]++; });
-  });
-  document.getElementById("cnt-st-Platform").textContent    = cnt["Platform"];
-  document.getElementById("cnt-st-Banka").textContent       = cnt["Banka"];
-  document.getElementById("cnt-st-Taurus").textContent      = cnt["Taurus"];
-  document.getElementById("cnt-st-Delist").textContent      = cnt["Delist"];
-  document.getElementById("cnt-st-NothingList").textContent = cnt["Nothing List"];
 }
 
 // ============================================================
