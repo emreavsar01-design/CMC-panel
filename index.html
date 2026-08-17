@@ -877,6 +877,7 @@ function buildCard(coin) {
   el.dataset.sym = coin.sym;
   el.dataset.name = (coin.name + " " + coin.network).toLowerCase();
   const statusBadges = getStatusLists(coin.status)
+    .filter(l => l === "Nothing List")
     .map(l => `<span class="status-badge ${statusClass(l)}">${l}</span>`)
     .join('');
   el.innerHTML = `
