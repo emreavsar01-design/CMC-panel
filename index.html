@@ -176,9 +176,10 @@
   .ex-chip.active[data-ex="stablex"] { background: #cc1111; color: #fff; }
   .ex-chip.active[data-ex="garanti"] { background: #1a7a3c; color: #fff; }
   .ex-chip.active[data-ex="fexobit"] { background: #6639e4; color: #fff; }
+  .ex-chip.active[data-ex="banka"]   { background: var(--green); color:#000; }
+  .ex-chip.active[data-ex="taurus"]  { background: var(--blue);  color:#fff; }
   .ex-chip.active[data-ex="none"]    { background: var(--text-dim); color: #000; }
   .ex-chip-count { opacity: 0.6; font-size: 10px; }
-  .ex-chip.active[data-st="Delist"]       { background:var(--red);    color:#fff; }
   .ex-chip.active[data-st="Nothing List"] { background:#3a3a6a;       color:#c0c0ff; }
 
   .ex-badges { display: flex; gap: 4px; }
@@ -197,6 +198,8 @@
   .ex-badge.has[data-ex="stablex"] { background: #cc1111; color: #fff; border-color: #cc1111; }
   .ex-badge.has[data-ex="garanti"] { background: #1a7a3c; color: #fff; border-color: #1a7a3c; }
   .ex-badge.has[data-ex="fexobit"] { background: #6639e4; color: #fff; border-color: #6639e4; }
+  .ex-badge.has[data-ex="banka"]   { background: var(--green); color: #000; border-color: var(--green); }
+  .ex-badge.has[data-ex="taurus"]  { background: var(--blue);  color: #fff; border-color: var(--blue); }
 </style>
 </head>
 <body>
@@ -271,12 +274,13 @@
     <span class="ex-chip" data-ex="stablex" onclick="toggleExchangeFilter('stablex')">Stablex <span class="ex-chip-count" id="cnt-stablex">—</span></span>
     <span class="ex-chip" data-ex="garanti" onclick="toggleExchangeFilter('garanti')">Garanti Kripto <span class="ex-chip-count" id="cnt-garanti">—</span></span>
     <span class="ex-chip" data-ex="fexobit" onclick="toggleExchangeFilter('fexobit')">Fexobit <span class="ex-chip-count" id="cnt-fexobit">—</span></span>
+    <span class="ex-chip" data-ex="banka"   onclick="toggleExchangeFilter('banka')">Banka <span class="ex-chip-count" id="cnt-banka">—</span></span>
+    <span class="ex-chip" data-ex="taurus"  onclick="toggleExchangeFilter('taurus')">Taurus <span class="ex-chip-count" id="cnt-taurus">—</span></span>
     <span class="ex-chip" data-ex="none"    onclick="toggleExchangeFilter('none')">Hiçbirinde yok <span class="ex-chip-count" id="cnt-none">—</span></span>
   </div>
 
   <div class="exchange-bar" id="statusBar">
     <span class="label">Durum filtresi:</span>
-    <span class="ex-chip" data-st="Delist"       onclick="toggleStatusFilter('Delist')">Delist <span class="ex-chip-count" id="cnt-st-Delist">—</span></span>
     <span class="ex-chip" data-st="Nothing List" onclick="toggleStatusFilter('Nothing List')">Nothing List <span class="ex-chip-count" id="cnt-st-NothingList">—</span></span>
   </div>
 
@@ -602,7 +606,7 @@ async function fetchUsdTry() {
 // ============================================================
 // BORSA LİSTELEMELERİ
 // ============================================================
-const EXCHANGES = ["binance", "okx", "paribu", "btcturk", "stablex", "garanti", "fexobit"];
+const EXCHANGES = ["binance", "okx", "paribu", "btcturk", "stablex", "garanti", "fexobit", "banka", "taurus"];
 const exchangeMap = {};   // { BTC: { binance: true, okx: true, ... }, ... }
 const exchangeFilters = new Set();  // aktif chip'ler
 let exchangeSets = null;  // fetchExchanges'tan sonra kullanılabilir olur
@@ -614,6 +618,10 @@ const STABLEX_SYMS = new Set(["AAVE","ADA","ALGO","ANKR","APE","ARB","ATOM","AUD
 // sembol listesi çekilemedi, kullanıcı tarafından platformdan elle doğrulandı.
 // Son doğrulama: 2026-08-10.
 const GARANTI_SYMS = new Set(["BTC","ETH","USDT","USDC","XRP","SOL","ADA","LTC","ONDO","AVAX","UNI","GRT","AAVE","ENA","LDO","DOT","LINK","PENDLE","CHZ","SAND","MANA","POL","INJ","ENS","QNT"]);
+// Banka (İş Bankası ortaklı "Platform - Banka") ve Taurus statüsündeki coinler —
+// dış API yok, coin.status alanından (TOKEN LIST.xlsx kaynaklı) türetilir.
+const BANKA_SYMS  = new Set(COINS.filter(c => getStatusLists(c.status).includes("Banka")).map(c => c.sym));
+const TAURUS_SYMS = new Set(COINS.filter(c => getStatusLists(c.status).includes("Taurus")).map(c => c.sym));
 
 async function fetchExchanges() {
   try {
@@ -628,10 +636,12 @@ async function fetchExchanges() {
       stablex: STABLEX_SYMS,
       garanti: GARANTI_SYMS,
       fexobit: new Set(d.fexobit || []),
+      banka:   BANKA_SYMS,
+      taurus:  TAURUS_SYMS,
     };
     exchangeSets = sets;
     // her coin için var/yok haritası
-    let cntInList = { binance: 0, okx: 0, paribu: 0, btcturk: 0, stablex: 0, garanti: 0, fexobit: 0, none: 0 };
+    let cntInList = { binance: 0, okx: 0, paribu: 0, btcturk: 0, stablex: 0, garanti: 0, fexobit: 0, banka: 0, taurus: 0, none: 0 };
     const countedEx = new Set();
     COINS.forEach(c => {
       const m = {};
@@ -684,7 +694,7 @@ function updateExchangeBadges(coins) {
     }
   });
   // Chip sayaçlarını COINS + nothingListCoins üzerinden yeniden hesapla
-  const cnt = { binance: 0, okx: 0, paribu: 0, btcturk: 0, stablex: 0, garanti: 0, fexobit: 0, none: 0 };
+  const cnt = { binance: 0, okx: 0, paribu: 0, btcturk: 0, stablex: 0, garanti: 0, fexobit: 0, banka: 0, taurus: 0, none: 0 };
   const seen = new Set();
   COINS.concat(nothingListCoins).forEach(c => {
     if (seen.has(c.sym)) return;
@@ -705,14 +715,13 @@ function updateExchangeBadges(coins) {
 // DURUM FİLTRESİ SAYAÇLARI
 // ============================================================
 function computeStatusCounts() {
-  const cnt = { Platform: 0, Banka: 0, Taurus: 0, Delist: 0, "Nothing List": 0 };
+  const cnt = { "Nothing List": 0 };
   const seen = new Set();
   COINS.concat(nothingListCoins).forEach(c => {
     if (seen.has(c.sym)) return;
     seen.add(c.sym);
     getStatusLists(c.status).forEach(l => { if (cnt[l] != null) cnt[l]++; });
   });
-  document.getElementById("cnt-st-Delist").textContent      = cnt["Delist"];
   document.getElementById("cnt-st-NothingList").textContent = cnt["Nothing List"];
 }
 
@@ -895,6 +904,8 @@ function buildCard(coin) {
       <span class="ex-badge" data-ex="stablex" id="ex-${coin.id}-stablex" title="Stablex">S</span>
       <span class="ex-badge" data-ex="garanti" id="ex-${coin.id}-garanti" title="Garanti Kripto">G</span>
       <span class="ex-badge" data-ex="fexobit" id="ex-${coin.id}-fexobit" title="Fexobit">F</span>
+      <span class="ex-badge" data-ex="banka"   id="ex-${coin.id}-banka"   title="Banka (İş Bankası)">İŞ</span>
+      <span class="ex-badge" data-ex="taurus"  id="ex-${coin.id}-taurus"  title="Taurus">TA</span>
     </div>
   `;
   return el;
@@ -1099,8 +1110,8 @@ function exportCSV() {
     "Sembol","Ad","Ağ","Fiyat USD","Fiyat TRY",
     "Değişim 1s %","Değişim 24s %","Değişim 7g %",
     "24s Hacim USD","Piyasa Değeri USD","CMC Sırası",
-    "Binance","OKX","Paribu","BTCTurk","Stablex","Garanti Kripto","Fexobit",
-    "Platform","Banka","Taurus","Delist","Nothing List"
+    "Binance","OKX","Paribu","BTCTurk","Stablex","Garanti Kripto","Fexobit","Banka","Taurus",
+    "Nothing List"
   ];
 
   const esc = v => {
@@ -1139,10 +1150,8 @@ function exportCSV() {
       ex.stablex ? "Evet" : "Hayır",
       ex.garanti ? "Evet" : "Hayır",
       ex.fexobit ? "Evet" : "Hayır",
-      stLists.includes("Platform")     ? "Evet" : "Hayır",
-      stLists.includes("Banka")        ? "Evet" : "Hayır",
-      stLists.includes("Taurus")       ? "Evet" : "Hayır",
-      stLists.includes("Delist")       ? "Evet" : "Hayır",
+      ex.banka   ? "Evet" : "Hayır",
+      ex.taurus  ? "Evet" : "Hayır",
       stLists.includes("Nothing List") ? "Evet" : "Hayır",
     ];
     lines.push(row.map(esc).join(SEP));
