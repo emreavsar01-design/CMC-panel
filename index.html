@@ -182,6 +182,28 @@
   .ex-chip-count { opacity: 0.6; font-size: 10px; }
   .ex-chip.active[data-st="Nothing List"] { background:#3a3a6a;       color:#c0c0ff; }
 
+  /* Ters filtre toggle */
+  .invert-toggle {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    padding: 6px 12px 6px 8px; border-radius: 20px; border: 1px solid var(--border);
+    background: var(--bg-card); transition: all 0.15s; user-select: none;
+    margin-left: 8px;
+  }
+  .invert-toggle:hover { border-color: var(--red); }
+  .invert-toggle .switch {
+    width: 30px; height: 16px; border-radius: 10px; background: var(--border);
+    position: relative; transition: background 0.15s; flex-shrink: 0;
+  }
+  .invert-toggle .switch-knob {
+    position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--text-dim); transition: left 0.15s, background 0.15s;
+  }
+  .invert-toggle.active { border-color: transparent; background: rgba(255,91,106,0.15); }
+  .invert-toggle.active .switch { background: var(--red); }
+  .invert-toggle.active .switch-knob { left: 16px; background: #fff; }
+  .invert-toggle.active .invert-label { color: var(--red); }
+  .invert-label { font-size: 12px; color: var(--text-dim); font-weight: 600; }
+
   .ex-badges { display: flex; gap: 4px; }
   .ex-badge {
     width: 22px; height: 22px; border-radius: 50%;
@@ -277,6 +299,10 @@
     <span class="ex-chip" data-ex="banka"   onclick="toggleExchangeFilter('banka')">Banka <span class="ex-chip-count" id="cnt-banka">—</span></span>
     <span class="ex-chip" data-ex="taurus"  onclick="toggleExchangeFilter('taurus')">Taurus <span class="ex-chip-count" id="cnt-taurus">—</span></span>
     <span class="ex-chip" data-ex="none"    onclick="toggleExchangeFilter('none')">Hiçbirinde yok <span class="ex-chip-count" id="cnt-none">—</span></span>
+    <span class="invert-toggle" id="invertToggle" onclick="toggleInvertFilter()" title="Açıkken seçili borsa filtresine UYMAYAN coinleri gösterir">
+      <span class="switch"><span class="switch-knob"></span></span>
+      <span class="invert-label">Ters Filtre</span>
+    </span>
   </div>
 
   <div class="exchange-bar" id="statusBar">
@@ -609,6 +635,7 @@ async function fetchUsdTry() {
 const EXCHANGES = ["binance", "okx", "paribu", "btcturk", "stablex", "garanti", "fexobit", "banka", "taurus"];
 const exchangeMap = {};   // { BTC: { binance: true, okx: true, ... }, ... }
 const exchangeFilters = new Set();  // aktif chip'ler
+let invertExchangeFilter = false;   // true: seçili borsa filtresine UYMAYAN coinleri göster
 let exchangeSets = null;  // fetchExchanges'tan sonra kullanılabilir olur
 
 // Stablex (stablex.com.tr — Akbank iştiraki). Açık API yok; stablex.com.tr/piyasalar
@@ -821,6 +848,12 @@ function toggleExchangeFilter(ex) {
     exchangeFilters.add(ex);
     el.classList.add("active");
   }
+  applySortAndFilter();
+}
+
+function toggleInvertFilter() {
+  invertExchangeFilter = !invertExchangeFilter;
+  document.getElementById("invertToggle").classList.toggle("active", invertExchangeFilter);
   applySortAndFilter();
 }
 
@@ -1075,6 +1108,7 @@ function applySortAndFilter() {
         // seçilen tüm borsalarda olanları göster (AND)
         exMatch = [...exchangeFilters].every(ex => m[ex]);
       }
+      if (invertExchangeFilter) exMatch = !exMatch;
     }
     let stMatch = true;
     if (statusFilters.size > 0) {
@@ -1090,7 +1124,7 @@ function applySortAndFilter() {
   });
   const parts = [];
   if (q) parts.push(`"${q}"`);
-  if (exchangeFilters.size > 0) parts.push([...exchangeFilters].join("+"));
+  if (exchangeFilters.size > 0) parts.push((invertExchangeFilter ? "¬" : "") + [...exchangeFilters].join("+"));
   if (statusFilters.size > 0) parts.push([...statusFilters].join("+"));
   document.getElementById("filterInfo").textContent =
     parts.length ? `${visible} / ${COINS.length + nothingListCoins.length} eşleşti (${parts.join(" · ")})` : "";
@@ -1161,7 +1195,7 @@ function exportCSV() {
   const q = document.getElementById("searchInput").value.trim();
   const filterParts = [];
   if (q) filterParts.push(q);
-  if (exchangeFilters.size > 0) filterParts.push([...exchangeFilters].join("+"));
+  if (exchangeFilters.size > 0) filterParts.push((invertExchangeFilter ? "not-" : "") + [...exchangeFilters].join("+"));
   if (statusFilters.size > 0) filterParts.push([...statusFilters].join("+"));
   const suffix = filterParts.length ? "-" + filterParts.join("_").replace(/[^a-zA-Z0-9_+.-]/g, "") : "";
 
