@@ -608,6 +608,24 @@ const COINS = [
   { id:"WLFI__Ethereum", sym:"WLFI", name:"World Liberty Financial", network:"Ethereum", status:"Platform - Banka - Taurus" },
   { id:"XAUt__Ethereum", sym:"XAUt", name:"Tether Gold", network:"Ethereum", status:"Platform - Banka - Taurus" },
   { id:"ZRX__Ethereum", sym:"ZRX", name:"0x", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  // Taurus'un desteklediği ama panelde hiç token satırı olmayan ağların native tokenları
+  // (TAURUS .xlsx, "Taurus Desteklenen Ağ Listesi" — ✅ işaretli, Banka listesinde yok).
+  { id:"FTM__Fantom", sym:"FTM", name:"Fantom", network:"Fantom", status:"Taurus" },
+  { id:"CC__Canton", sym:"CC", name:"Canton", network:"Canton", status:"Taurus" },
+  { id:"LINEA__Linea", sym:"LINEA", name:"Linea", network:"Linea", status:"Taurus" },
+  { id:"DOT__Polkadot", sym:"DOT", name:"Polkadot", network:"Polkadot", status:"Taurus" },
+  { id:"XPL__Plasma", sym:"XPL", name:"Plasma", network:"Plasma", status:"Taurus" },
+  { id:"XDC__XDC", sym:"XDC", name:"XDC Network", network:"XDC", status:"Taurus" },
+  { id:"ZIG__Zigchain", sym:"ZIG", name:"ZIGChain", network:"Zigchain", status:"Taurus" },
+  // Yukarıdaki ağlarda ayrıca desteklendiği doğrulanan diğer token'lar (native token dışında).
+  { id:"USDT__Fantom", sym:"USDT", name:"Tether", network:"Fantom", status:"Taurus" },
+  { id:"USDC__Fantom", sym:"USDC", name:"USD Coin", network:"Fantom", status:"Taurus" },
+  { id:"USDC__XDC", sym:"USDC", name:"USD Coin", network:"XDC", status:"Taurus" },
+  { id:"USDCx__Canton", sym:"USDCx", name:"USDCx", network:"Canton", status:"Taurus" },
+  { id:"USDC__Linea", sym:"USDC", name:"USD Coin", network:"Linea", status:"Taurus" },
+  { id:"USDC__Polkadot", sym:"USDC", name:"USD Coin", network:"Polkadot", status:"Taurus" },
+  { id:"USDT__Polkadot", sym:"USDT", name:"Tether", network:"Polkadot", status:"Taurus" },
+  { id:"USDT__Plasma", sym:"USDT", name:"Tether", network:"Plasma", status:"Taurus" },
 ];
 
 const BRAND = {
@@ -682,10 +700,20 @@ const STABLEX_SYMS = new Set(["AAVE","ADA","ALGO","ANKR","APE","ARB","ATOM","AUD
 // sembol listesi çekilemedi, kullanıcı tarafından platformdan elle doğrulandı.
 // Son doğrulama: 2026-08-10.
 const GARANTI_SYMS = new Set(["BTC","ETH","USDT","USDC","XRP","SOL","ADA","LTC","ONDO","AVAX","UNI","GRT","AAVE","ENA","LDO","DOT","LINK","PENDLE","CHZ","SAND","MANA","POL","INJ","ENS","QNT"]);
-// Banka (İş Bankası ortaklı "Platform - Banka") ve Taurus statüsündeki coinler —
-// dış API yok, coin.status alanından (TOKEN LIST.xlsx kaynaklı) türetilir.
+// Banka (İş Bankası ortaklı "Platform - Banka") — dış API yok, coin.status alanından
+// (TOKEN LIST.xlsx kaynaklı) türetilir; kürasyonlu bir liste olduğu için ağdan bağımsız türetilemez.
 const BANKA_SYMS  = new Set(COINS.filter(c => getStatusLists(c.status).includes("Banka")).map(c => c.sym));
-const TAURUS_SYMS = new Set(COINS.filter(c => getStatusLists(c.status).includes("Taurus")).map(c => c.sym));
+// Taurus, ağ bazlı bir custody desteğidir (TAURUS .xlsx, "Taurus Desteklenen Ağ Listesi").
+// Bir ağ ✅ ise o ağdaki HER token (Delist dahil) Taurus destekli sayılır — status alanından
+// değil, doğrudan coin.network üyeliğinden türetilir.
+const TAURUS_NETWORKS = new Set([
+  "Algorand", "Arbitrum", "Avalanche C-Chain", "Base", "BNB Smart Chain", "Bitcoin",
+  "Bitcoin Cash", "Bittensor", "Canton", "Cardano", "Cosmos", "Dogecoin", "Ethereum",
+  "Fantom", "Filecoin", "Hedera", "ICP", "Litecoin", "Linea", "Mina", "NEAR", "Optimism",
+  "Polkadot", "Polygon", "Plasma", "XRP Ledger", "Solana", "Sonic", "Stellar", "Tezos",
+  "Tron", "XDC", "Zigchain",
+]);
+const TAURUS_SYMS = new Set(COINS.filter(c => TAURUS_NETWORKS.has(c.network)).map(c => c.sym));
 
 async function fetchExchanges() {
   try {
@@ -948,7 +976,7 @@ function getCoinById(id) {
 // Diğer (gerçek) borsalar için sembol bazlı exchangeMap davranışı korunur.
 function rowMatchesEx(coin, ex) {
   if (ex === "banka")  return getStatusLists(coin.status).includes("Banka");
-  if (ex === "taurus") return getStatusLists(coin.status).includes("Taurus");
+  if (ex === "taurus") return TAURUS_NETWORKS.has(coin.network);
   return !!(exchangeMap[coin.sym] && exchangeMap[coin.sym][ex]);
 }
 
@@ -1233,7 +1261,7 @@ function exportCSV() {
       ex.garanti ? "Evet" : "Hayır",
       ex.fexobit ? "Evet" : "Hayır",
       stLists.includes("Banka")  ? "Evet" : "Hayır",
-      stLists.includes("Taurus") ? "Evet" : "Hayır",
+      TAURUS_NETWORKS.has(c.network) ? "Evet" : "Hayır",
       stLists.includes("Nothing List") ? "Evet" : "Hayır",
     ];
     lines.push(row.map(esc).join(SEP));
