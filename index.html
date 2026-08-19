@@ -329,7 +329,7 @@ const WORKER_URL = "https://kripto-proxy.emreavsar01.workers.dev";  // Cloudflar
 
 // TOKEN LIST.xlsx — 242 giriş (ağ bazında)
 const COINS = [
-  { id:"ADA__Cardano", sym:"ADA", name:"Cardano", network:"Cardano", status:"Platform - Banka" },
+  { id:"ADA__Cardano", sym:"ADA", name:"Cardano", network:"Cardano", status:"Platform - Banka - Taurus" },
   { id:"USDC__Algorand", sym:"USDC", name:"USD Coin", network:"Algorand", status:"Delist" },
   { id:"ALGO__Algorand", sym:"ALGO", name:"Algorand", network:"Algorand", status:"Delist" },
   { id:"APT__Aptos", sym:"APT", name:"Aptos", network:"Aptos", status:"Delist" },
@@ -345,10 +345,10 @@ const COINS = [
   { id:"GMX__Arbitrum", sym:"GMX", name:"GMX", network:"Arbitrum", status:"Taurus" },
   { id:"ARB__Arbitrum", sym:"ARB", name:"Arbitrum", network:"Arbitrum", status:"Taurus" },
   { id:"ATOM__Cosmos", sym:"ATOM", name:"Cosmos", network:"Cosmos", status:"Taurus" },
-  { id:"AVAX__Avalanche_C_Chain", sym:"AVAX", name:"Avalanche", network:"Avalanche C-Chain", status:"Platform - Banka" },
-  { id:"USDT__Avalanche_C_Chain", sym:"USDT", name:"Tether", network:"Avalanche C-Chain", status:"Platform - Banka" },
-  { id:"USDC__Avalanche_C_Chain", sym:"USDC", name:"USD Coin", network:"Avalanche C-Chain", status:"Platform - Banka" },
-  { id:"GMX__Avalanche_C_Chain", sym:"GMX", name:"GMX", network:"Avalanche C-Chain", status:"Platform - Banka" },
+  { id:"AVAX__Avalanche_C_Chain", sym:"AVAX", name:"Avalanche", network:"Avalanche C-Chain", status:"Platform - Banka - Taurus" },
+  { id:"USDT__Avalanche_C_Chain", sym:"USDT", name:"Tether", network:"Avalanche C-Chain", status:"Platform - Banka - Taurus" },
+  { id:"USDC__Avalanche_C_Chain", sym:"USDC", name:"USD Coin", network:"Avalanche C-Chain", status:"Platform - Banka - Taurus" },
+  { id:"GMX__Avalanche_C_Chain", sym:"GMX", name:"GMX", network:"Avalanche C-Chain", status:"Platform - Banka - Taurus" },
   { id:"USDC__Base", sym:"USDC", name:"USD Coin", network:"Base", status:"Taurus" },
   { id:"ETH__Base", sym:"ETH", name:"Ethereum", network:"Base", status:"Taurus" },
   { id:"BCH__Bitcoin_Cash", sym:"BCH", name:"Bitcoin Cash", network:"Bitcoin Cash", status:"Taurus" },
@@ -405,7 +405,7 @@ const COINS = [
   { id:"UNI__BNB_Smart_Chain", sym:"UNI", name:"Uniswap", network:"BNB Smart Chain", status:"Taurus" },
   { id:"TWT__BNB_Smart_Chain", sym:"TWT", name:"Trust Wallet Token", network:"BNB Smart Chain", status:"Taurus" },
   { id:"CAKE__BNB_Smart_Chain", sym:"CAKE", name:"PancakeSwap", network:"BNB Smart Chain", status:"Taurus" },
-  { id:"BTC__Bitcoin", sym:"BTC", name:"Bitcoin", network:"Bitcoin", status:"Platform - Banka" },
+  { id:"BTC__Bitcoin", sym:"BTC", name:"Bitcoin", network:"Bitcoin", status:"Platform - Banka - Taurus" },
   { id:"USDC__Celo", sym:"USDC", name:"USD Coin", network:"Celo", status:"Delist" },
   { id:"CELO__Celo", sym:"CELO", name:"Celo", network:"Celo", status:"Delist" },
   { id:"USDT__Celo", sym:"USDT", name:"Tether", network:"Celo", status:"Delist" },
@@ -417,71 +417,71 @@ const COINS = [
   { id:"EOS__EOS", sym:"EOS", name:"EOS", network:"EOS", status:"Delist" },
   { id:"USDT__EOS", sym:"USDT", name:"Tether", network:"EOS", status:"Delist" },
   { id:"ETC__Ethereum_Classic", sym:"ETC", name:"Ethereum Classic", network:"Ethereum Classic", status:"Delist" },
-  { id:"ETH__Ethereum", sym:"ETH", name:"Ethereum", network:"Ethereum", status:"Platform - Banka" },
-  { id:"EIGEN__Ethereum", sym:"EIGEN", name:"EigenLayer", network:"Ethereum", status:"Platform - Banka" },
-  { id:"BEL__Ethereum", sym:"BEL", name:"Bella Protocol", network:"Ethereum", status:"Platform" },
-  { id:"BEAMX__Ethereum", sym:"BEAMX", name:"Beam", network:"Ethereum", status:"Platform" },
-  { id:"IMX__Ethereum", sym:"IMX", name:"Immutable X", network:"Ethereum", status:"Platform - Banka" },
-  { id:"SAND__Ethereum", sym:"SAND", name:"The Sandbox", network:"Ethereum", status:"Platform - Banka" },
-  { id:"HOT__Ethereum", sym:"HOT", name:"Holo", network:"Ethereum", status:"Platform" },
-  { id:"RLC__Ethereum", sym:"RLC", name:"iExec RLC", network:"Ethereum", status:"Platform" },
-  { id:"USDT__Ethereum", sym:"USDT", name:"Tether", network:"Ethereum", status:"Platform - Banka" },
-  { id:"ARKM__Ethereum", sym:"ARKM", name:"Arkham", network:"Ethereum", status:"Platform - Banka" },
-  { id:"MEME__Ethereum", sym:"MEME", name:"Memecoin", network:"Ethereum", status:"Platform" },
-  { id:"STRK__Ethereum", sym:"STRK", name:"Starknet", network:"Ethereum", status:"Platform - Banka" },
-  { id:"TLM__Ethereum", sym:"TLM", name:"Alien Worlds", network:"Ethereum", status:"Platform" },
-  { id:"GALA__Ethereum", sym:"GALA", name:"Gala", network:"Ethereum", status:"Platform - Banka" },
-  { id:"DYDX__Ethereum", sym:"DYDX", name:"dYdX", network:"Ethereum", status:"Platform" },
-  { id:"XRP__Ethereum", sym:"XRP", name:"XRP", network:"Ethereum", status:"Platform" },
-  { id:"ETHFI__Ethereum", sym:"ETHFI", name:"Ether.fi", network:"Ethereum", status:"Platform - Banka" },
-  { id:"LDO__Ethereum", sym:"LDO", name:"Lido DAO", network:"Ethereum", status:"Platform - Banka" },
-  { id:"ARB__Ethereum", sym:"ARB", name:"Arbitrum", network:"Ethereum", status:"Platform - Banka" },
-  { id:"ACH__Ethereum", sym:"ACH", name:"Alchemy Pay", network:"Ethereum", status:"Platform" },
-  { id:"PAXG__Ethereum", sym:"PAXG", name:"PAX Gold", network:"Ethereum", status:"Platform - Banka" },
-  { id:"CRV__Ethereum", sym:"CRV", name:"Curve DAO Token", network:"Ethereum", status:"Platform - Banka" },
-  { id:"APE__Ethereum", sym:"APE", name:"ApeCoin", network:"Ethereum", status:"Platform - Banka" },
-  { id:"BAT__Ethereum", sym:"BAT", name:"Basic Attention Token", network:"Ethereum", status:"Platform - Banka" },
-  { id:"SLP__Ethereum", sym:"SLP", name:"Smooth Love Potion", network:"Ethereum", status:"Platform - Banka" },
-  { id:"OXT__Ethereum", sym:"OXT", name:"Orchid", network:"Ethereum", status:"Platform" },
-  { id:"AXS__Ethereum", sym:"AXS", name:"Axie Infinity", network:"Ethereum", status:"Platform - Banka" },
-  { id:"SHIB__Ethereum", sym:"SHIB", name:"Shiba Inu", network:"Ethereum", status:"Platform - Banka" },
-  { id:"T__Ethereum", sym:"T", name:"Threshold", network:"Ethereum", status:"Platform - Banka" },
-  { id:"FLOKI__Ethereum", sym:"FLOKI", name:"FLOKI", network:"Ethereum", status:"Platform - Banka" },
-  { id:"BTC__Ethereum", sym:"BTC", name:"Wrapped Bitcoin", network:"Ethereum", status:"Platform" },
-  { id:"MANA__Ethereum", sym:"MANA", name:"Decentraland", network:"Ethereum", status:"Platform - Banka" },
-  { id:"WLD__Ethereum", sym:"WLD", name:"Worldcoin", network:"Ethereum", status:"Platform - Banka" },
-  { id:"MOVE__Ethereum", sym:"MOVE", name:"Movement", network:"Ethereum", status:"Platform - Banka" },
-  { id:"PEPE__Ethereum", sym:"PEPE", name:"Pepe", network:"Ethereum", status:"Platform - Banka" },
-  { id:"SNX__Ethereum", sym:"SNX", name:"Synthetix", network:"Ethereum", status:"Platform - Banka" },
-  { id:"SKY__Ethereum", sym:"SKY", name:"SKY", network:"Ethereum", status:"Platform - Banka" },
-  { id:"W__Ethereum", sym:"W", name:"Wormhole", network:"Ethereum", status:"Platform - Banka" },
-  { id:"ANKR__Ethereum", sym:"ANKR", name:"Ankr", network:"Ethereum", status:"Platform - Banka" },
-  { id:"UNI__Ethereum", sym:"UNI", name:"Uniswap", network:"Ethereum", status:"Platform - Banka" },
-  { id:"TRB__Ethereum", sym:"TRB", name:"Tellor", network:"Ethereum", status:"Platform" },
-  { id:"QNT__Ethereum", sym:"QNT", name:"Quant", network:"Ethereum", status:"Platform - Banka" },
-  { id:"LRC__Ethereum", sym:"LRC", name:"Loopring", network:"Ethereum", status:"Platform - Banka" },
-  { id:"USDC__Ethereum", sym:"USDC", name:"USD Coin", network:"Ethereum", status:"Platform - Banka" },
-  { id:"STORJ__Ethereum", sym:"STORJ", name:"Storj", network:"Ethereum", status:"Platform - Banka" },
-  { id:"UMA__Ethereum", sym:"UMA", name:"UMA", network:"Ethereum", status:"Platform - Banka" },
-  { id:"ENA__Ethereum", sym:"ENA", name:"Ethena", network:"Ethereum", status:"Platform - Banka" },
-  { id:"BUSD__Ethereum", sym:"BUSD", name:"Binance USD", network:"Ethereum", status:"Platform" },
-  { id:"CHZ__Ethereum", sym:"CHZ", name:"Chiliz", network:"Ethereum", status:"Platform - Banka" },
-  { id:"CTSI__Ethereum", sym:"CTSI", name:"Cartesi", network:"Ethereum", status:"Platform" },
-  { id:"AAVE__Ethereum", sym:"AAVE", name:"Aave", network:"Ethereum", status:"Platform - Banka" },
-  { id:"DUSK__Ethereum", sym:"DUSK", name:"Dusk", network:"Ethereum", status:"Platform" },
-  { id:"LINK__Ethereum", sym:"LINK", name:"Chainlink", network:"Ethereum", status:"Platform - Banka" },
-  { id:"PIXEL__Ethereum", sym:"PIXEL", name:"Pixels", network:"Ethereum", status:"Platform" },
-  { id:"GMT__Ethereum", sym:"GMT", name:"STEPN", network:"Ethereum", status:"Platform - Banka" },
-  { id:"FET__Ethereum", sym:"FET", name:"Fetch.ai", network:"Ethereum", status:"Platform - Banka" },
-  { id:"BLUR__Ethereum", sym:"BLUR", name:"Blur", network:"Ethereum", status:"Platform - Banka" },
-  { id:"GRT__Ethereum", sym:"GRT", name:"The Graph", network:"Ethereum", status:"Platform - Banka" },
-  { id:"AUDIO__Ethereum", sym:"AUDIO", name:"Audius", network:"Ethereum", status:"Platform" },
-  { id:"OGN__Ethereum", sym:"OGN", name:"Origin Protocol", network:"Ethereum", status:"Platform" },
-  { id:"ENS__Ethereum", sym:"ENS", name:"Ethereum Name Service", network:"Ethereum", status:"Platform - Banka" },
-  { id:"SPELL__Ethereum", sym:"SPELL", name:"Spell Token", network:"Ethereum", status:"Platform - Banka" },
-  { id:"SUSHI__Ethereum", sym:"SUSHI", name:"SushiSwap", network:"Ethereum", status:"Platform - Banka" },
-  { id:"KNC__Ethereum", sym:"KNC", name:"Kyber Network", network:"Ethereum", status:"Platform" },
-  { id:"VANRY__Ethereum", sym:"VANRY", name:"Vanar Chain", network:"Ethereum", status:"Platform" },
+  { id:"ETH__Ethereum", sym:"ETH", name:"Ethereum", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"EIGEN__Ethereum", sym:"EIGEN", name:"EigenLayer", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"BEL__Ethereum", sym:"BEL", name:"Bella Protocol", network:"Ethereum", status:"Taurus" },
+  { id:"BEAMX__Ethereum", sym:"BEAMX", name:"Beam", network:"Ethereum", status:"Taurus" },
+  { id:"IMX__Ethereum", sym:"IMX", name:"Immutable X", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"SAND__Ethereum", sym:"SAND", name:"The Sandbox", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"HOT__Ethereum", sym:"HOT", name:"Holo", network:"Ethereum", status:"Taurus" },
+  { id:"RLC__Ethereum", sym:"RLC", name:"iExec RLC", network:"Ethereum", status:"Taurus" },
+  { id:"USDT__Ethereum", sym:"USDT", name:"Tether", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"ARKM__Ethereum", sym:"ARKM", name:"Arkham", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"MEME__Ethereum", sym:"MEME", name:"Memecoin", network:"Ethereum", status:"Taurus" },
+  { id:"STRK__Ethereum", sym:"STRK", name:"Starknet", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"TLM__Ethereum", sym:"TLM", name:"Alien Worlds", network:"Ethereum", status:"Taurus" },
+  { id:"GALA__Ethereum", sym:"GALA", name:"Gala", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"DYDX__Ethereum", sym:"DYDX", name:"dYdX", network:"Ethereum", status:"Taurus" },
+  { id:"XRP__Ethereum", sym:"XRP", name:"XRP", network:"Ethereum", status:"Taurus" },
+  { id:"ETHFI__Ethereum", sym:"ETHFI", name:"Ether.fi", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"LDO__Ethereum", sym:"LDO", name:"Lido DAO", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"ARB__Ethereum", sym:"ARB", name:"Arbitrum", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"ACH__Ethereum", sym:"ACH", name:"Alchemy Pay", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"PAXG__Ethereum", sym:"PAXG", name:"PAX Gold", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"CRV__Ethereum", sym:"CRV", name:"Curve DAO Token", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"APE__Ethereum", sym:"APE", name:"ApeCoin", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"BAT__Ethereum", sym:"BAT", name:"Basic Attention Token", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"SLP__Ethereum", sym:"SLP", name:"Smooth Love Potion", network:"Ethereum", status:"Taurus" },
+  { id:"OXT__Ethereum", sym:"OXT", name:"Orchid", network:"Ethereum", status:"Taurus" },
+  { id:"AXS__Ethereum", sym:"AXS", name:"Axie Infinity", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"SHIB__Ethereum", sym:"SHIB", name:"Shiba Inu", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"T__Ethereum", sym:"T", name:"Threshold", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"FLOKI__Ethereum", sym:"FLOKI", name:"FLOKI", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"BTC__Ethereum", sym:"BTC", name:"Wrapped Bitcoin", network:"Ethereum", status:"Taurus" },
+  { id:"MANA__Ethereum", sym:"MANA", name:"Decentraland", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"WLD__Ethereum", sym:"WLD", name:"Worldcoin", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"MOVE__Ethereum", sym:"MOVE", name:"Movement", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"PEPE__Ethereum", sym:"PEPE", name:"Pepe", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"SNX__Ethereum", sym:"SNX", name:"Synthetix", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"SKY__Ethereum", sym:"SKY", name:"SKY", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"W__Ethereum", sym:"W", name:"Wormhole", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"ANKR__Ethereum", sym:"ANKR", name:"Ankr", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"UNI__Ethereum", sym:"UNI", name:"Uniswap", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"TRB__Ethereum", sym:"TRB", name:"Tellor", network:"Ethereum", status:"Taurus" },
+  { id:"QNT__Ethereum", sym:"QNT", name:"Quant", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"LRC__Ethereum", sym:"LRC", name:"Loopring", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"USDC__Ethereum", sym:"USDC", name:"USD Coin", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"STORJ__Ethereum", sym:"STORJ", name:"Storj", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"UMA__Ethereum", sym:"UMA", name:"UMA", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"ENA__Ethereum", sym:"ENA", name:"Ethena", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"BUSD__Ethereum", sym:"BUSD", name:"Binance USD", network:"Ethereum", status:"Taurus" },
+  { id:"CHZ__Ethereum", sym:"CHZ", name:"Chiliz", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"CTSI__Ethereum", sym:"CTSI", name:"Cartesi", network:"Ethereum", status:"Taurus" },
+  { id:"AAVE__Ethereum", sym:"AAVE", name:"Aave", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"DUSK__Ethereum", sym:"DUSK", name:"Dusk", network:"Ethereum", status:"Taurus" },
+  { id:"LINK__Ethereum", sym:"LINK", name:"Chainlink", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"PIXEL__Ethereum", sym:"PIXEL", name:"Pixels", network:"Ethereum", status:"Taurus" },
+  { id:"GMT__Ethereum", sym:"GMT", name:"STEPN", network:"Ethereum", status:"Taurus" },
+  { id:"FET__Ethereum", sym:"FET", name:"Fetch.ai", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"BLUR__Ethereum", sym:"BLUR", name:"Blur", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"GRT__Ethereum", sym:"GRT", name:"The Graph", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"AUDIO__Ethereum", sym:"AUDIO", name:"Audius", network:"Ethereum", status:"Taurus" },
+  { id:"OGN__Ethereum", sym:"OGN", name:"Origin Protocol", network:"Ethereum", status:"Taurus" },
+  { id:"ENS__Ethereum", sym:"ENS", name:"Ethereum Name Service", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"SPELL__Ethereum", sym:"SPELL", name:"Spell Token", network:"Ethereum", status:"Taurus" },
+  { id:"SUSHI__Ethereum", sym:"SUSHI", name:"SushiSwap", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"KNC__Ethereum", sym:"KNC", name:"Kyber Network", network:"Ethereum", status:"Taurus" },
+  { id:"VANRY__Ethereum", sym:"VANRY", name:"Vanar Chain", network:"Ethereum", status:"Taurus" },
   { id:"ETHW__EthereumPoW", sym:"ETHW", name:"EthereumPoW", network:"EthereumPoW", status:"Platform" },
   { id:"FET__FET", sym:"FET", name:"Fetch.ai", network:"FET", status:"Delist" },
   { id:"FIL__Filecoin", sym:"FIL", name:"Filecoin", network:"Filecoin", status:"Delist" },
@@ -493,14 +493,14 @@ const COINS = [
   { id:"KDA__Kadena", sym:"KDA", name:"Kadena", network:"Kadena", status:"Delist" },
   { id:"LTC__Litecoin", sym:"LTC", name:"Litecoin", network:"Litecoin", status:"Taurus" },
   { id:"LUNA__Terra", sym:"LUNA", name:"Terra", network:"Terra", status:"Delist" },
-  { id:"SAND__Polygon", sym:"SAND", name:"The Sandbox", network:"Polygon", status:"Platform" },
-  { id:"USDC__Polygon", sym:"USDC", name:"USD Coin", network:"Polygon", status:"Platform" },
-  { id:"KNC__Polygon", sym:"KNC", name:"Kyber Network", network:"Polygon", status:"Platform" },
-  { id:"POL__Polygon", sym:"POL", name:"Polygon", network:"Polygon", status:"Platform" },
-  { id:"USDT__Polygon", sym:"USDT", name:"Tether", network:"Polygon", status:"Platform" },
-  { id:"GMT__Polygon", sym:"GMT", name:"STEPN", network:"Polygon", status:"Platform" },
-  { id:"VANRY__Polygon", sym:"VANRY", name:"Vanar Chain", network:"Polygon", status:"Platform" },
-  { id:"GRT__Polygon", sym:"GRT", name:"The Graph", network:"Polygon", status:"Platform" },
+  { id:"SAND__Polygon", sym:"SAND", name:"The Sandbox", network:"Polygon", status:"Taurus" },
+  { id:"USDC__Polygon", sym:"USDC", name:"USD Coin", network:"Polygon", status:"Platform - Banka - Taurus" },
+  { id:"KNC__Polygon", sym:"KNC", name:"Kyber Network", network:"Polygon", status:"Taurus" },
+  { id:"POL__Polygon", sym:"POL", name:"Polygon", network:"Polygon", status:"Platform - Banka - Taurus" },
+  { id:"USDT__Polygon", sym:"USDT", name:"Tether", network:"Polygon", status:"Platform - Banka - Taurus" },
+  { id:"GMT__Polygon", sym:"GMT", name:"STEPN", network:"Polygon", status:"Taurus" },
+  { id:"VANRY__Polygon", sym:"VANRY", name:"Vanar Chain", network:"Polygon", status:"Taurus" },
+  { id:"GRT__Polygon", sym:"GRT", name:"The Graph", network:"Polygon", status:"Taurus" },
   { id:"MINA__Mina", sym:"MINA", name:"Mina", network:"Mina", status:"Delist" },
   { id:"USDT__NEAR", sym:"USDT", name:"Tether", network:"NEAR", status:"Delist" },
   { id:"NEAR__NEAR", sym:"NEAR", name:"NEAR Protocol", network:"NEAR", status:"Delist" },
@@ -523,54 +523,91 @@ const COINS = [
   { id:"RUNE__THORChain", sym:"RUNE", name:"THORChain", network:"THORChain", status:"Delist" },
   { id:"RVN__Ravencoin", sym:"RVN", name:"Ravencoin", network:"Ravencoin", status:"Delist" },
   { id:"SEI__Sei", sym:"SEI", name:"Sei", network:"Sei", status:"Delist" },
-  { id:"FIDA__Solana", sym:"FIDA", name:"Bonfida", network:"Solana", status:"Platform - Banka" },
-  { id:"TRUMP__Solana", sym:"TRUMP", name:"TRUMP", network:"Solana", status:"Platform - Banka" },
+  { id:"FIDA__Solana", sym:"FIDA", name:"Bonfida", network:"Solana", status:"Taurus" },
+  { id:"TRUMP__Solana", sym:"TRUMP", name:"TRUMP", network:"Solana", status:"Platform - Banka - Taurus" },
   { id:"PNUT__Solana", sym:"PNUT", name:"PNUT", network:"Solana", status:"Delist" },
   { id:"GEZIO__Solana", sym:"GEZIO", name:"GEZIO", network:"Solana", status:"Delist" },
-  { id:"WIF__Solana", sym:"WIF", name:"dogwifhat", network:"Solana", status:"Platform - Banka" },
-  { id:"ME__Solana", sym:"ME", name:"Magic Eden", network:"Solana", status:"Platform - Banka" },
-  { id:"RENDER__Solana", sym:"RENDER", name:"Render", network:"Solana", status:"Platform - Banka" },
-  { id:"PENGU__Solana", sym:"PENGU", name:"Pudgy Penguins", network:"Solana", status:"Platform - Banka" },
-  { id:"USDT__Solana", sym:"USDT", name:"Tether", network:"Solana", status:"Platform - Banka" },
+  { id:"WIF__Solana", sym:"WIF", name:"dogwifhat", network:"Solana", status:"Platform - Banka - Taurus" },
+  { id:"ME__Solana", sym:"ME", name:"Magic Eden", network:"Solana", status:"Platform - Banka - Taurus" },
+  { id:"RENDER__Solana", sym:"RENDER", name:"Render", network:"Solana", status:"Platform - Banka - Taurus" },
+  { id:"PENGU__Solana", sym:"PENGU", name:"Pudgy Penguins", network:"Solana", status:"Platform - Banka - Taurus" },
+  { id:"USDT__Solana", sym:"USDT", name:"Tether", network:"Solana", status:"Platform - Banka - Taurus" },
   { id:"NOHUT__Solana", sym:"NOHUT", name:"NOHUT", network:"Solana", status:"Delist" },
-  { id:"RAY__Solana", sym:"RAY", name:"Raydium", network:"Solana", status:"Platform - Banka" },
-  { id:"JUP__Solana", sym:"JUP", name:"Jupiter", network:"Solana", status:"Platform" },
+  { id:"RAY__Solana", sym:"RAY", name:"Raydium", network:"Solana", status:"Platform - Banka - Taurus" },
+  { id:"JUP__Solana", sym:"JUP", name:"Jupiter", network:"Solana", status:"Taurus" },
   { id:"FEXO__Solana", sym:"FEXO", name:"FEXO", network:"Solana", status:"Delist" },
-  { id:"BOME__Solana", sym:"BOME", name:"BOOK OF MEME", network:"Solana", status:"Platform - Banka" },
-  { id:"BONK__Solana", sym:"BONK", name:"Bonk", network:"Solana", status:"Platform - Banka" },
+  { id:"BOME__Solana", sym:"BOME", name:"BOOK OF MEME", network:"Solana", status:"Taurus" },
+  { id:"BONK__Solana", sym:"BONK", name:"Bonk", network:"Solana", status:"Platform - Banka - Taurus" },
   { id:"EKINX__Solana", sym:"EKINX", name:"EKINX", network:"Solana", status:"Delist" },
   { id:"RUE__Solana", sym:"RUE", name:"RUE", network:"Solana", status:"Delist" },
-  { id:"USDC__Solana", sym:"USDC", name:"USD Coin", network:"Solana", status:"Platform - Banka" },
+  { id:"USDC__Solana", sym:"USDC", name:"USD Coin", network:"Solana", status:"Platform - Banka - Taurus" },
   { id:"MRCMK__Solana", sym:"MRCMK", name:"MRCMK", network:"Solana", status:"Delist" },
-  { id:"W__Solana", sym:"W", name:"Wormhole", network:"Solana", status:"Platform - Banka" },
+  { id:"W__Solana", sym:"W", name:"Wormhole", network:"Solana", status:"Taurus" },
   { id:"FEXY__Solana", sym:"FEXY", name:"FEXY", network:"Solana", status:"Delist" },
-  { id:"SOL__Solana", sym:"SOL", name:"Solana", network:"Solana", status:"Platform - Banka" },
-  { id:"GMT__Solana", sym:"GMT", name:"STEPN", network:"Solana", status:"Platform - Banka" },
-  { id:"GEN__Solana", sym:"GEN", name:"GEN", network:"Solana", status:"Platform" },
-  { id:"PYTH__Solana", sym:"PYTH", name:"Pyth Network", network:"Solana", status:"Platform" },
-  { id:"S__Sonic", sym:"S", name:"Sonic", network:"Sonic", status:"Platform" },
+  { id:"SOL__Solana", sym:"SOL", name:"Solana", network:"Solana", status:"Platform - Banka - Taurus" },
+  { id:"GMT__Solana", sym:"GMT", name:"STEPN", network:"Solana", status:"Taurus" },
+  { id:"GEN__Solana", sym:"GEN", name:"GEN", network:"Solana", status:"Taurus" },
+  { id:"PYTH__Solana", sym:"PYTH", name:"Pyth Network", network:"Solana", status:"Taurus" },
+  { id:"S__Sonic", sym:"S", name:"Sonic", network:"Sonic", status:"Taurus" },
   { id:"ETH__Starknet", sym:"ETH", name:"Ethereum", network:"Starknet", status:"Delist" },
   { id:"STRK__Starknet", sym:"STRK", name:"Starknet", network:"Starknet", status:"Delist" },
   { id:"STX__Stacks", sym:"STX", name:"Stacks", network:"Stacks", status:"Delist" },
-  { id:"SUI__Sui", sym:"SUI", name:"Sui", network:"Sui", status:"Platform - Taurus" },
+  { id:"SUI__Sui", sym:"SUI", name:"Sui", network:"Sui", status:"Platform" },
   { id:"TAO__Bittensor", sym:"TAO", name:"Bittensor", network:"Bittensor", status:"Delist" },
   { id:"THETA__Theta", sym:"THETA", name:"Theta Network", network:"Theta", status:"Delist" },
   { id:"TIA__Celestia", sym:"TIA", name:"Celestia", network:"Celestia", status:"Delist" },
-  { id:"USDT__TON", sym:"USDT", name:"Tether", network:"TON", status:"Platform - Taurus" },
-  { id:"NOT__TON", sym:"NOT", name:"Notcoin", network:"TON", status:"Platform - Taurus" },
-  { id:"DOGS__TON", sym:"DOGS", name:"DOGS", network:"TON", status:"Platform - Taurus" },
-  { id:"TON__TON", sym:"TON", name:"Toncoin", network:"TON", status:"Platform - Taurus" },
-  { id:"USDT__Tron", sym:"USDT", name:"Tether", network:"Tron", status:"Platform - Taurus" },
-  { id:"TRX__Tron", sym:"TRX", name:"TRON", network:"Tron", status:"Platform - Taurus" },
+  { id:"USDT__TON", sym:"USDT", name:"Tether", network:"TON", status:"Platform" },
+  { id:"NOT__TON", sym:"NOT", name:"Notcoin", network:"TON", status:"Platform" },
+  { id:"DOGS__TON", sym:"DOGS", name:"DOGS", network:"TON", status:"Platform" },
+  { id:"TON__TON", sym:"TON", name:"Toncoin", network:"TON", status:"Platform" },
+  { id:"USDT__Tron", sym:"USDT", name:"Tether", network:"Tron", status:"Taurus" },
+  { id:"TRX__Tron", sym:"TRX", name:"TRON", network:"Tron", status:"Taurus" },
   { id:"VET__VeChain", sym:"VET", name:"VeChain", network:"VeChain", status:"Delist" },
   { id:"WAVES__Waves", sym:"WAVES", name:"Waves", network:"Waves", status:"Delist" },
   { id:"XAI__Xai", sym:"XAI", name:"Xai", network:"Xai", status:"Delist" },
-  { id:"USDC__Stellar", sym:"USDC", name:"USD Coin", network:"Stellar", status:"Platform - Banka" },
-  { id:"XLM__Stellar", sym:"XLM", name:"Stellar", network:"Stellar", status:"Platform - Banka" },
-  { id:"XRP__XRP_Ledger", sym:"XRP", name:"XRP", network:"XRP Ledger", status:"Platform - Banka" },
+  { id:"USDC__Stellar", sym:"USDC", name:"USD Coin", network:"Stellar", status:"Platform - Banka - Taurus" },
+  { id:"XLM__Stellar", sym:"XLM", name:"Stellar", network:"Stellar", status:"Platform - Banka - Taurus" },
+  { id:"XRP__XRP_Ledger", sym:"XRP", name:"XRP", network:"XRP Ledger", status:"Platform - Banka - Taurus" },
   { id:"USDT__Tezos", sym:"USDT", name:"Tether", network:"Tezos", status:"Delist" },
   { id:"XTZ__Tezos", sym:"XTZ", name:"Tezos", network:"Tezos", status:"Delist" },
   { id:"ZIL__Zilliqa", sym:"ZIL", name:"Zilliqa", network:"Zilliqa", status:"Delist" },
+  { id:"1INCH__Ethereum", sym:"1INCH", name:"1inch Network", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"AMP__Ethereum", sym:"AMP", name:"Amp", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"ATH__Ethereum", sym:"ATH", name:"Aethir", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"ATOM__Ethereum", sym:"ATOM", name:"Cosmos", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"BIO__Ethereum", sym:"BIO", name:"Bio Protocol", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"C98__Ethereum", sym:"C98", name:"Coin98", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"CELR__Ethereum", sym:"CELR", name:"Celr Network", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"COMP__Ethereum", sym:"COMP", name:"Compound", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"COW__Ethereum", sym:"COW", name:"CoW Protocol", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"CVX__Ethereum", sym:"CVX", name:"Convex Finance", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"DOT__Ethereum", sym:"DOT", name:"Polkadot", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"DRIFT__Solana", sym:"DRIFT", name:"Drift Protocol", network:"Solana", status:"Platform - Banka - Taurus" },
+  { id:"ETH__Polygon", sym:"ETH", name:"Ethereum", network:"Polygon", status:"Platform - Banka - Taurus" },
+  { id:"FLOW__Ethereum", sym:"FLOW", name:"Flow", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"ICP__Ethereum", sym:"ICP", name:"Internet Computer", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"INJ__Ethereum", sym:"INJ", name:"Injective Protocol", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"JASMY__Ethereum", sym:"JASMY", name:"JasmyCoin", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"LPT__Ethereum", sym:"LPT", name:"Livepeer", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"MASK__Ethereum", sym:"MASK", name:"Mask Network", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"MNT__Ethereum", sym:"MNT", name:"Mantle", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"NEAR__Ethereum", sym:"NEAR", name:"NEAR Protocol", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"NMR__Ethereum", sym:"NMR", name:"Numeraire", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"OM__Ethereum", sym:"OM", name:"Mantra", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"ONDO__Ethereum", sym:"ONDO", name:"Ondo Finance", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"ORCA__Solana", sym:"ORCA", name:"Orca Protocol", network:"Solana", status:"Platform - Banka - Taurus" },
+  { id:"PENDLE__Ethereum", sym:"PENDLE", name:"Pendle", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"POL__Ethereum", sym:"POL", name:"Polygon", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"PUMP__Solana", sym:"PUMP", name:"Pump.fun", network:"Solana", status:"Platform - Banka - Taurus" },
+  { id:"RSR__Ethereum", sym:"RSR", name:"Reserve Rights", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"SKL__Ethereum", sym:"SKL", name:"Skale", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"SUPER__Ethereum", sym:"SUPER", name:"Superverse", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"SYRUP__Ethereum", sym:"SYRUP", name:"Maple Finance", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"TURBO__Ethereum", sym:"TURBO", name:"Turbo", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"VIRTUAL__Ethereum", sym:"VIRTUAL", name:"Virtuals Protocol", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"WLFI__Ethereum", sym:"WLFI", name:"World Liberty Financial", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"XAUt__Ethereum", sym:"XAUt", name:"Tether Gold", network:"Ethereum", status:"Platform - Banka - Taurus" },
+  { id:"ZRX__Ethereum", sym:"ZRX", name:"0x", network:"Ethereum", status:"Platform - Banka - Taurus" },
 ];
 
 const BRAND = {
@@ -684,11 +721,11 @@ async function fetchExchanges() {
         for (const ex of EXCHANGES) { if (m[ex]) cntInList[ex]++; }
         if (!any) cntInList.none++;
       }
-      // rozet UI güncelle (coin.id ile)
+      // rozet UI güncelle (coin.id ile) — banka/taurus satırın kendi ağına göre, diğerleri sembol bazlı
       for (const ex of EXCHANGES) {
         const el = document.getElementById(`ex-${c.id}-${ex}`);
         if (el) {
-          if (m[ex]) el.classList.add("has");
+          if (rowMatchesEx(c, ex)) el.classList.add("has");
           else el.classList.remove("has");
         }
       }
@@ -714,10 +751,9 @@ function updateExchangeBadges(coins) {
       for (const ex of EXCHANGES) m[ex] = exchangeSets[ex].has(c.sym);
       exchangeMap[c.sym] = m;
     }
-    const m = exchangeMap[c.sym];
     for (const ex of EXCHANGES) {
       const el = document.getElementById(`ex-${c.id}-${ex}`);
-      if (el) m[ex] ? el.classList.add("has") : el.classList.remove("has");
+      if (el) rowMatchesEx(c, ex) ? el.classList.add("has") : el.classList.remove("has");
     }
   });
   // Chip sayaçlarını COINS + nothingListCoins üzerinden yeniden hesapla
@@ -893,14 +929,27 @@ function statusClass(s) {
 
 function getStatusLists(status) {
   switch (status) {
-    case "Platform - Banka":  return ["Platform", "Banka"];
-    case "Platform - Taurus": return ["Platform", "Taurus"];
+    case "Platform - Banka":         return ["Platform", "Banka"];
+    case "Platform - Taurus":        return ["Platform", "Taurus"];
+    case "Platform - Banka - Taurus": return ["Platform", "Banka", "Taurus"];
     case "Platform":          return ["Platform"];
     case "Taurus":            return ["Taurus"];
     case "Delist":            return ["Platform", "Delist"];
     case "Nothing List":      return ["Nothing List"];
     default:                  return [];
   }
+}
+
+function getCoinById(id) {
+  return COINS.find(co => co.id === id) || nothingListCoins.find(co => co.id === id);
+}
+
+// Banka/Taurus ağa özgüdür — satırın kendi status'üne göre eşleşir, sembol genelinde değil.
+// Diğer (gerçek) borsalar için sembol bazlı exchangeMap davranışı korunur.
+function rowMatchesEx(coin, ex) {
+  if (ex === "banka")  return getStatusLists(coin.status).includes("Banka");
+  if (ex === "taurus") return getStatusLists(coin.status).includes("Taurus");
+  return !!(exchangeMap[coin.sym] && exchangeMap[coin.sym][ex]);
 }
 
 function buildCard(coin) {
@@ -1098,22 +1147,20 @@ function applySortAndFilter() {
   cards.forEach(c => {
     const sym = c.dataset.sym;
     const textMatch = !q || sym.toLowerCase().includes(q) || c.dataset.name.includes(q);
+    const coinData = getCoinById(c.id.slice(5));
     let exMatch = true;
     if (exchangeFilters.size > 0) {
-      const m = exchangeMap[sym] || {};
       if (exchangeFilters.has("none")) {
         // hiçbirinde olmayanları göster
-        exMatch = EXCHANGES.every(ex => !m[ex]);
+        exMatch = coinData ? EXCHANGES.every(ex => !rowMatchesEx(coinData, ex)) : true;
       } else {
-        // seçilen tüm borsalarda olanları göster (AND)
-        exMatch = [...exchangeFilters].every(ex => m[ex]);
+        // seçilen tüm borsalarda olanları göster (AND) — banka/taurus satırın kendi ağına göre
+        exMatch = coinData ? [...exchangeFilters].every(ex => rowMatchesEx(coinData, ex)) : false;
       }
       if (invertExchangeFilter) exMatch = !exMatch;
     }
     let stMatch = true;
     if (statusFilters.size > 0) {
-      const coinId = c.id.slice(5);
-      const coinData = COINS.find(co => co.id === coinId) || nothingListCoins.find(co => co.id === coinId);
       stMatch = coinData
         ? getStatusLists(coinData.status).some(l => statusFilters.has(l))
         : false;
@@ -1185,8 +1232,8 @@ function exportCSV() {
       ex.stablex ? "Evet" : "Hayır",
       ex.garanti ? "Evet" : "Hayır",
       ex.fexobit ? "Evet" : "Hayır",
-      ex.banka   ? "Evet" : "Hayır",
-      ex.taurus  ? "Evet" : "Hayır",
+      stLists.includes("Banka")  ? "Evet" : "Hayır",
+      stLists.includes("Taurus") ? "Evet" : "Hayır",
       stLists.includes("Nothing List") ? "Evet" : "Hayır",
     ];
     lines.push(row.map(esc).join(SEP));
